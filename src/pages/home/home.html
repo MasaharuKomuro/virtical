@@ -6,32 +6,52 @@
 
 <ion-content class="card-background-page">
 
-  <ion-card>
-    <img src="assets/imgs/from_888_1.jpg"/>
-    <div class="card-title">São Paulo</div>
-    <div class="card-subtitle">41 Listings</div>
-    <div class="card-overray"></div>
+  <ion-card *ngFor="let panel of panels">
+
+    <ion-item>
+      <ion-avatar item-start>
+        <img [src]="panel.image">
+      </ion-avatar>
+      <h2>Marty McFly</h2>
+      <p>November 5, 1955</p>
+    </ion-item>
+
+    <img [src]="panel.image">
+
+    <ion-card-content>
+      <p>{{ panel.body }}</p>
+    </ion-card-content>
+
+    <ion-row>
+      <ion-col>
+        <button ion-button icon-start clear small>
+          <ion-icon name="thumbs-up"></ion-icon>
+          <div>{{ panel.likes }} Likes</div>
+        </button>
+      </ion-col>
+      <ion-col>
+        <button ion-button icon-start clear small>
+          <ion-icon name="text"></ion-icon>
+          <div>{{ panel.comments }} Comments</div>
+        </button>
+      </ion-col>
+      <ion-col center text-center>
+        <ion-note>
+          {{ panel.ago }} ago
+        </ion-note>
+      </ion-col>
+    </ion-row>
+
   </ion-card>
 
-  <ion-card>
-    <img src="assets/imgs/from_888_2.jpg"/>
-    <div class="card-title">Amsterdam</div>
-    <div class="card-subtitle">64 Listings</div>
-    <div class="card-overray"></div>
-  </ion-card>
-
-  <ion-card>
-    <img src="assets/imgs/from_888_3.jpg"/>
-    <div class="card-title">San Francisco</div>
-    <div class="card-subtitle">72 Listings</div>
-    <div class="card-overray"></div>
-  </ion-card>
-
-  <ion-card>
-    <img src="assets/imgs/from_888_4.jpg"/>
-    <div class="card-title">Madison</div>
-    <div class="card-subtitle">28 Listings</div>
-    <div class="card-overray"></div>
-  </ion-card>
+  <ion-fab right bottom>
+    <button ion-fab color="add"><ion-icon name="arrow-dropup"></ion-icon></button>
+    <ion-fab-list side="top">
+      <button ion-fab><ion-icon name="logo-facebook"></ion-icon></button>
+      <button ion-fab><ion-icon name="logo-twitter"></ion-icon></button>
+      <button ion-fab><ion-icon name="logo-vimeo"></ion-icon></button>
+      <button ion-fab><ion-icon name="logo-googleplus"></ion-icon></button>
+    </ion-fab-list>
+  </ion-fab>
 
 </ion-content>
