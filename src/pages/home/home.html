@@ -6,7 +6,7 @@
 
 <ion-content class="card-background-page">
 
-  <ion-card *ngFor="let panel of panels">
+  <ion-card *ngFor="let panel of panels; let index = index">
 
     <ion-item>
       <ion-avatar item-start>
@@ -16,7 +16,10 @@
       <p>November 5, 1955</p>
     </ion-item>
 
-    <img [src]="panel.image">
+    <img [src]="panel.image"
+         [navPush]="'ArticlePage'"
+         [navParams]="{ id: index }"
+    >
 
     <ion-card-content>
       <p>{{ panel.body }}</p>
