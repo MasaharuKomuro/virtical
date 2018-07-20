@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ModalController } from 'ionic-angular';
 
 @Component({
   templateUrl: 'tabs.html'
@@ -12,7 +13,8 @@ export class TabsPage {
     { root: 'ContactPage', title: 'Contact', icon: 'contacts' }
   ];
 
-  constructor() {
-
+  constructor( public modalCtrl: ModalController ) {
+    let contactModal = this.modalCtrl.create( 'LoginPage' );
+    contactModal.present();
   }
 }
