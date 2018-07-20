@@ -13,8 +13,6 @@ export class TabsPage {
     { root: 'ContactPage', title: 'Contact', icon: 'contacts' }
   ];
 
-  constructor( public modalCtrl: ModalController ) {
-    let contactModal = this.modalCtrl.create( 'LoginPage' );
-    contactModal.present();
-  }
+  constructor(
+    public modalCtrl: ModalController ) {}
 }

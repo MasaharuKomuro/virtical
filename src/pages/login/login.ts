@@ -46,4 +46,13 @@ export class LoginPage {
     });
   }
 
+  logout(): void {// 変更
+    this.angularFireAuth.auth.signOut().then(() => {
+    }).then(() => alert('ログアウトしました。'))
+    .catch( err => {
+      console.log(err);
+      alert('ログアウトに失敗しました。\n' + err);
+    })
+  }
+
 }
