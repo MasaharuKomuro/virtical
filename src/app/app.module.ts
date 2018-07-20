@@ -10,18 +10,25 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { AboutPageModule } from '../pages/about/about.module';
 import { ContactPageModule } from '../pages/contact/contact.module';
 import { ArticlePageModule } from '../pages/article/article.module';
+import { AngularFireModule } from 'angularfire2';
+import { LoginPageModule } from '../pages/login/login.module';
+import { firebaseConfig } from '../api_keys/firebase';
+import { AngularFireAuthModule } from 'angularfire2/auth';
 
 @NgModule({
   declarations: [
     MyApp,
-    TabsPage
+    TabsPage,
   ],
   imports: [
     AboutPageModule,
     ContactPageModule,
     ArticlePageModule,
     BrowserModule,
-    IonicModule.forRoot(MyApp)
+    LoginPageModule,
+    IonicModule.forRoot(MyApp),
+    AngularFireModule.initializeApp(firebaseConfig,{}),
+    AngularFireAuthModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [

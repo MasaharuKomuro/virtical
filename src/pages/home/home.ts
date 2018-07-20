@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
+import { IonicPage, ModalController, NavController } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -8,8 +8,12 @@ import { IonicPage, NavController } from 'ionic-angular';
 })
 export class HomePage {
 
-  constructor(public navCtrl: NavController) {
-
+  constructor(
+    public navCtrl: NavController,
+    public modalCtrl: ModalController
+  ) {
+    let contactModal = this.modalCtrl.create( 'LoginPage' );
+    contactModal.present();
   }
 
   public panels = [
