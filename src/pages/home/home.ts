@@ -11,6 +11,18 @@ export class HomePage {
   constructor(
     public navCtrl: NavController
   ) {
+    console.log( location.href );
+    console.log( this.navCtrl.getViews() );
+    console.log( this.navCtrl.getViews().length );
+    if ( this.navCtrl.getViews().length == 1 ) {
+      // this.navCtrl.insert(0, 'HomePage', null,{ animate:false }).then(
+      //   ()=>this.navCtrl.push('DetailPage',null, { animate:false }).then(
+      //     ()=>{
+      //       this.navCtrl.remove(1)
+      //     }
+      //   )
+      // );
+    }
   }
 
   public panels = [

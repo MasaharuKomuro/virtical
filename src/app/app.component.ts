@@ -11,17 +11,21 @@ import { AngularFireAuth } from 'angularfire2/auth';
 })
 export class MyApp {
 
-  rootPage: any = TabsPage;
+  rootPage: any = 'TabsPage';
 
   constructor(
     platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen,
     private angularFireAuth: AngularFireAuth, private modalCtrl: ModalController
   ) {
+      console.log( location.href );
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
-      statusBar.styleDefault();
-      splashScreen.hide();
+      // statusBar.styleDefault();
+      // splashScreen.hide();
+
+      console.log( this.modalCtrl );
+      console.log( location.href );
 
       this.angularFireAuth.authState.subscribe( ( user ) => {
         // ログインしていない

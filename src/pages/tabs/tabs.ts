@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { ModalController } from 'ionic-angular';
+import { IonicPage, ModalController } from 'ionic-angular';
 
+@IonicPage({ segment: 'main' })
 @Component({
   templateUrl: 'tabs.html'
 })
@@ -14,5 +15,8 @@ export class TabsPage {
   ];
 
   constructor(
-    public modalCtrl: ModalController ) {}
+    public modalCtrl: ModalController
+    ) {
+    console.log( location.href );
+  }
 }
