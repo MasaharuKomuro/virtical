@@ -1,4 +1,10 @@
-<ion-tabs>
+<ion-header>
+  <ion-navbar>
+    <ion-title>{{ tabRoots[tab_group?.getSelected()?.index]?.header_title }}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-tabs #tab_group>
   <ion-tab *ngFor="let tabRoot of tabRoots"
            [root]="tabRoot.root"
            [tabTitle]="tabRoot.title"
