@@ -2,7 +2,8 @@ import { Component, EventEmitter, ViewChild } from '@angular/core';
 import { IonicPage, LoadingController, NavController, NavParams, TextInput } from 'ionic-angular';
 import { AngularFirestore, QueryDocumentSnapshot, QuerySnapshot } from 'angularfire2/firestore';
 import { PokerSpot } from '../../model/pokerSpot';
-import { Storage } from '@ionic/storage'
+import { Storage } from '@ionic/storage';
+import { Geolocation } from '@ionic-native/geolocation';
 
 @IonicPage()
 @Component({
@@ -41,11 +42,20 @@ export class SpotsPage {
     public navParams: NavParams,
     private store: AngularFirestore,
     private loadingCtrl: LoadingController,
-    private storage: Storage
+    private storage: Storage,
+    private geolocation: Geolocation
   ) {}
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SpotsPage');
+
+    this.geolocation.getCurrentPosition().then((resp) => {
+      console.log(resp);
+      // resp.coords.latitude
+      // resp.coords.longitude
+    }).catch((error) => {
+      console.log('Error getting location', error);
+    });
 
     const loader = this.loadingCtrl.create({
       content: "読込中..."
