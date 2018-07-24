@@ -23,9 +23,6 @@ export class MyApp {
       // statusBar.styleDefault();
       // splashScreen.hide();
 
-      console.log( this.modalCtrl );
-      console.log( location.href );
-
       this.angularFireAuth.authState.subscribe( ( user ) => {
         // ログインしていない
         if ( !user ) {

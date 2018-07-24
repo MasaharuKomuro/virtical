@@ -12,7 +12,7 @@ export class TabsPage {
 
   public tabRoots = [
     { root: 'HomePage', title: ' News', icon: 'home', header_title: 'ニュース' },
-    { root: 'AboutPage', title: 'Movie', icon: 'information-circle', header_title: 'お勧め動画' },
+    { root: 'AboutPage', title: 'Movie', icon: 'videocam', header_title: 'お勧め動画' },
     { root: 'AboutPage', title: 'About', icon: 'information-circle', header_title: 'About Us' },
     { root: 'ContactPage', title: 'Contact', icon: 'contacts', header_title: 'Contact' }
   ];

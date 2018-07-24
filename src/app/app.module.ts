@@ -8,6 +8,8 @@ import { AngularFireModule } from 'angularfire2';
 import { LoginPageModule } from '../pages/login/login.module';
 import { firebaseConfig } from '../api_keys/firebase';
 import { AngularFireAuthModule } from 'angularfire2/auth';
+import { ControlPageModule } from '../pages/control/control.module';
+import { AngularFirestoreModule } from 'angularfire2/firestore';
 
 @NgModule({
   declarations: [
@@ -16,9 +18,11 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
   imports: [
     BrowserModule,
     LoginPageModule,
+    ControlPageModule,
     IonicModule.forRoot(MyApp),
     AngularFireModule.initializeApp(firebaseConfig,{}),
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    AngularFirestoreModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
