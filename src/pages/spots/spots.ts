@@ -18,6 +18,7 @@ export class SpotsPage {
 
   public spots = new EventEmitter<PokerSpot[]>();
 
+  // フィルターリングキーワード
   private _filter;
 
   get filter () {
@@ -49,6 +50,7 @@ export class SpotsPage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad SpotsPage');
 
+    // 位置情報を取得
     this.geolocation.getCurrentPosition().then((resp) => {
       console.log(resp);
       // resp.coords.latitude
@@ -65,7 +67,7 @@ export class SpotsPage {
     this.storage.get( 'spots' ).then( ( spots: string ) => {
       this._spots = JSON.parse( spots );
 
-      if ( this._spots.length === 0 ) {
+      if ( !!this._spots && this._spots.length === 0 ) {
         this.store.firestore.collection( 'poker_spot' ).get().then( ( snapShot: QuerySnapshot<PokerSpot> ) => {
           snapShot.docs.map( ( doc: QueryDocumentSnapshot<PokerSpot> ) => {
             this._spots.push( new PokerSpot( doc.data() as PokerSpot ) );
