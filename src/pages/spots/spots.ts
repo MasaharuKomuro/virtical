@@ -64,14 +64,18 @@ export class SpotsPage {
     });
     loader.present();
 
+    this.storage.remove( 'spots' );
     this.storage.get( 'spots' ).then( ( spots: string ) => {
-      this._spots = JSON.parse( spots );
+      console.log(spots);
+      this._spots = JSON.parse( spots ) || [];
 
       if ( !!this._spots && this._spots.length !== 0 ) {
         this.spots.emit( this._spots );
         loader.dismiss();
       } else {
+        console.log( 'ポーカースポット情報を取得' );
         this.store.firestore.collection( 'poker_spot' ).get().then( ( snapShot: QuerySnapshot<PokerSpot> ) => {
+          console.log( snapShot );
           snapShot.docs.map( ( doc: QueryDocumentSnapshot<PokerSpot> ) => {
             this._spots.push( new PokerSpot( doc.data() as PokerSpot ) );
           } );
