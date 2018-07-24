@@ -1,14 +1,8 @@
-import { Component } from '@angular/core';
-import { IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { Component, EventEmitter, ViewChild } from '@angular/core';
+import { IonicPage, LoadingController, NavController, NavParams, TextInput } from 'ionic-angular';
 import { AngularFirestore, QueryDocumentSnapshot, QuerySnapshot } from 'angularfire2/firestore';
 import { PokerSpot } from '../../model/pokerSpot';
-
-/**
- * Generated class for the SpotsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { Storage } from '@ionic/storage'
 
 @IonicPage()
 @Component({
@@ -17,15 +11,38 @@ import { PokerSpot } from '../../model/pokerSpot';
 })
 export class SpotsPage {
 
-  public spots: PokerSpot[] = [];
+  @ViewChild( 'filter_keyword_input' ) filter_keyword_input: TextInput;
+
+  public _spots: PokerSpot[] = [];
+
+  public spots = new EventEmitter<PokerSpot[]>();
+
+  private _filter;
+
+  get filter () {
+    return this._filter;
+  }
+
+  set filter ( value ) {
+    this._filter = value;
+    console.log( 'set' );
+    this.spots.emit( this.filterSpots() );
+  }
+
+  private filterSpots = (): PokerSpot[] => {
+    return this._spots.filter( ( spot: PokerSpot ) => {
+      const target = ( spot.name + spot.address1 + spot.address2 + spot.address_description + spot.tel ).toLowerCase();
+      return target.indexOf( this.filter.toLowerCase() ) !== -1;
+    });
+  };
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     private store: AngularFirestore,
-    private loadingCtrl: LoadingController
-  ) {
-  }
+    private loadingCtrl: LoadingController,
+    private storage: Storage
+  ) {}
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SpotsPage');
@@ -35,15 +52,27 @@ export class SpotsPage {
     });
     loader.present();
 
-    this.store.firestore.collection( 'poker_spot' ).get().then( ( snapShot: QuerySnapshot<PokerSpot> ) => {
-      snapShot.docs.map( ( doc: QueryDocumentSnapshot<PokerSpot> ) => {
-        this.spots.push( new PokerSpot( doc.data() as PokerSpot ) );
-      });
-      loader.dismiss();
-    }).catch( error => {
-      console.log( error );
-      loader.dismiss();
+    this.storage.get( 'spots' ).then( ( spots: string ) => {
+      this._spots = JSON.parse( spots );
+
+      if ( this._spots.length === 0 ) {
+        this.store.firestore.collection( 'poker_spot' ).get().then( ( snapShot: QuerySnapshot<PokerSpot> ) => {
+          snapShot.docs.map( ( doc: QueryDocumentSnapshot<PokerSpot> ) => {
+            this._spots.push( new PokerSpot( doc.data() as PokerSpot ) );
+          } );
+          this.storage.set( 'spots', JSON.stringify( this._spots ) );
+          this.spots.emit( this._spots );
+          loader.dismiss();
+        } ).catch( error => {
+          console.log( error );
+          loader.dismiss();
+        } );
+      } else {
+        this.spots.emit( this._spots );
+        loader.dismiss();
+      }
     });
   }
+
 
 }

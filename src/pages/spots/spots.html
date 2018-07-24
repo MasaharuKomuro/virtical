@@ -1,6 +1,25 @@
-<ion-content padding>
+<ion-header>
+  <ion-navbar>
+    <ion-title>ポーカースポット</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
   <ion-list>
-    <button ion-item *ngFor="let spot of spots">
+    <ion-item>
+      <ion-label>
+        <ion-icon name="search"></ion-icon>
+      </ion-label>
+      <ion-input type="text" placeholder="検索 ( 店名、住所、電話 ) " [(ngModel)]="filter" ></ion-input>
+    </ion-item>
+  </ion-list>
+
+  <ion-list>
+    <ion-list-header>
+      全{{ ( spots | async )?.length }}件
+    </ion-list-header>
+    <button ion-item *ngFor="let spot of spots | async">
       {{ spot?.name }}
     </button>
   </ion-list>
