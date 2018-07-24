@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController, IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
+import { AlertController, IonicPage, LoadingController, NavController, NavParams, ViewController } from 'ionic-angular';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 /**
@@ -25,7 +25,8 @@ export class LoginPage {
     public navParams: NavParams,
     public viewCtrl: ViewController,
     public angularFireAuth: AngularFireAuth,
-    public alertCtrl: AlertController
+    public alertCtrl: AlertController,
+    private loadingCtrl: LoadingController
   ) {
   }
 
@@ -34,9 +35,15 @@ export class LoginPage {
   }
 
   login() {
+    const loader = this.loadingCtrl.create({
+      content: "Please wait..."
+    });
+    loader.present();
     this.angularFireAuth.auth.signInWithEmailAndPassword( this.email, this.password ).then( () => {
+      loader.dismiss();
       this.viewCtrl.dismiss();
     } ).catch( err => {
+      loader.dismiss();
       let alert = this.alertCtrl.create( {
         title:    'ログインエラー',
         subTitle: 'ログインできませんでした。',
