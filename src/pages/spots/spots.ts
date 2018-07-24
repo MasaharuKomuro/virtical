@@ -67,7 +67,10 @@ export class SpotsPage {
     this.storage.get( 'spots' ).then( ( spots: string ) => {
       this._spots = JSON.parse( spots );
 
-      if ( !!this._spots && this._spots.length === 0 ) {
+      if ( !!this._spots && this._spots.length !== 0 ) {
+        this.spots.emit( this._spots );
+        loader.dismiss();
+      } else {
         this.store.firestore.collection( 'poker_spot' ).get().then( ( snapShot: QuerySnapshot<PokerSpot> ) => {
           snapShot.docs.map( ( doc: QueryDocumentSnapshot<PokerSpot> ) => {
             this._spots.push( new PokerSpot( doc.data() as PokerSpot ) );
@@ -79,9 +82,6 @@ export class SpotsPage {
           console.log( error );
           loader.dismiss();
         } );
-      } else {
-        this.spots.emit( this._spots );
-        loader.dismiss();
       }
     });
   }
