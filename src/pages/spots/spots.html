@@ -13,7 +13,24 @@
             [longitude]="geo_position.coords.longitude"
             [zoom]="map_config.zoom"
     >
-      <agm-marker [latitude]="geo_position.coords.latitude" [longitude]="geo_position.coords.longitude"></agm-marker>
+      <agm-marker [latitude]="geo_position.coords.latitude" [longitude]="geo_position.coords.longitude"
+                  [title]="'title'" [label]="'現在地'"
+                  [iconUrl]="'assets/imgs/map_0.png'"
+      >
+        <agm-info-window>現在地</agm-info-window>
+      </agm-marker>
+      <ng-container *ngFor="let spot of _spots">
+        <agm-marker *ngIf="!!spot?.latitude && !!spot?.longitude"
+                    [latitude]="spot?.latitude"
+                    [longitude]="spot?.longitude"
+                    [title]="spot.name"
+                    [label]="spot.name"
+                    [markerClickable]="true"
+                    [openInfoWindow]="true"
+        >
+          <agm-info-window>{{ spot.name }}</agm-info-window>
+        </agm-marker>
+      </ng-container>
     </agm-map>
   </div>
 

@@ -39,8 +39,7 @@ export class SpotsPage {
     private loadingCtrl: LoadingController,
     private storage: Storage,
     private geolocation: Geolocation
-  ) {
-  }
+  ) {}
 
   // フィルターリングキーワード
   private _filter;
@@ -57,6 +56,7 @@ export class SpotsPage {
 
   ionViewDidLoad() {
     console.log( 'ionViewDidLoad SpotsPage' );
+    this.storage.remove('spots');
 
     // 位置情報を取得
     this.geolocation.getCurrentPosition().then( ( position: Geoposition ) => {

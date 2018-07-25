@@ -95,13 +95,16 @@ export class ControlPage {
   };
 
   public geoCording = ( docs: QueryDocumentSnapshot<PokerSpot>[] ) => {
+    console.log( docs.length );
     const doc = docs[0];
     const spot = doc.data() as PokerSpot;
-    if ( !!spot && !spot.geo ) {
+    if ( !!spot ) {
       this.mapProvider.geocoder.geocode( { address: spot.address1 }, ( result: GeocoderResult, status ) => {
         if ( status == 'OK' ) {
           spot.geo = Object.assign( {}, result[ 0 ] );
           // ↓ 保存できないオブジェクトを削除する
+          spot.latitude = spot.geo.geometry.location.lat();
+          spot.longitude = spot.geo.geometry.location.lng();
           delete spot.geo.geometry;
           console.log( doc.id );
           console.log( spot );

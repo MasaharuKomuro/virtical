@@ -8,6 +8,8 @@ export class PokerSpot {
   public tel?: string;
   public updated_at: string;
   public geo?: GeocoderResult; // google map api の geo cording 結果を格納
+  public latitude: number;
+  public longitude: number;
 
   constructor ( spot: Partial<PokerSpot>) {
     Object.assign( this, spot );
