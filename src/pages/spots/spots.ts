@@ -4,6 +4,8 @@ import { AngularFirestore, QueryDocumentSnapshot, QuerySnapshot } from 'angularf
 import { PokerSpot } from '../../model/pokerSpot';
 import { Storage } from '@ionic/storage';
 import { Geolocation } from '@ionic-native/geolocation';
+import { GoogleMap, GoogleMaps, GoogleMapsEvent } from '@ionic-native/google-maps';
+import { Platform } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -31,6 +33,8 @@ export class SpotsPage {
     this.spots.emit( this.filterSpots() );
   }
 
+  private map: GoogleMap;
+
   private filterSpots = (): PokerSpot[] => {
     return this._spots.filter( ( spot: PokerSpot ) => {
       const target = ( spot.name + spot.address1 + spot.address2 + spot.address_description + spot.tel ).toLowerCase();
@@ -44,8 +48,14 @@ export class SpotsPage {
     private store: AngularFirestore,
     private loadingCtrl: LoadingController,
     private storage: Storage,
-    private geolocation: Geolocation
-  ) {}
+    private geolocation: Geolocation,
+    private platform: Platform
+  ) {
+    // google map を表示
+    this.platform.ready().then( () => {
+      this.loadMap();
+    });
+  }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SpotsPage');
@@ -64,9 +74,8 @@ export class SpotsPage {
     });
     loader.present();
 
-    this.storage.remove( 'spots' );
     this.storage.get( 'spots' ).then( ( spots: string ) => {
-      console.log(spots);
+      // console.log(spots);
       this._spots = JSON.parse( spots ) || [];
 
       if ( !!this._spots && this._spots.length !== 0 ) {
@@ -90,5 +99,17 @@ export class SpotsPage {
     });
   }
 
+  private loadMap = () => {
+    // 表示したい位置にある<div>のidを指定します
+    this.map = GoogleMaps.create('map_canvas');
 
+    // MAP_READYイベントが来るまで待ちます
+    this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+      console.log('地図が準備完了！');
+    });
+  };
+
+  public remove = () => {
+    this.storage.remove( 'spots' );
+  };
 }

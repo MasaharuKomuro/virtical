@@ -12,6 +12,7 @@ import { ControlPageModule } from '../pages/control/control.module';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { IonicStorageModule } from '@ionic/storage';
 import { Geolocation } from '@ionic-native/geolocation';
+import { GoogleMaps } from '@ionic-native/google-maps';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { Geolocation } from '@ionic-native/geolocation';
     StatusBar,
     SplashScreen,
     Geolocation,
+    GoogleMaps,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
