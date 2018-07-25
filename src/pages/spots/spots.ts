@@ -63,7 +63,7 @@ export class SpotsPage {
       console.log( position );
       this.geo_position = position;
     } ).catch( ( error ) => {
-      console.log( 'Error getting location', error );
+      console.warn( 'Error getting location', error );
     } );
 
     const loader = this.loadingCtrl.create( {

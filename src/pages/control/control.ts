@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore, QueryDocumentSnapshot, QuerySnapshot } from 'angularfire2/firestore';
 import * as moment from 'moment-mini';
+import { PokerSpot } from '../../model/pokerSpot';
+import { MapProvider } from '../..//providers/map/map';
+import GeocoderResult = google.maps.GeocoderResult;
 
 /**
  * Generated class for the ControlPage page.
@@ -18,7 +21,9 @@ import * as moment from 'moment-mini';
 export class ControlPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-              private store: AngularFirestore ) {
+              private store: AngularFirestore,
+              private mapProvider: MapProvider
+              ) {
   }
 
   ionViewDidLoad() {
@@ -79,19 +84,51 @@ export class ControlPage {
     });
   };
 
-  // public test1 = () => {
-  //   const data = {
-  //     name:                "Nine Field",
-  //     address:             {
-  //       state: "群馬県",
-  //       city:  "太田市",
-  //       line:  "飯田町1069"
-  //     },
-  //     address_description: "",
-  //     tel:                 "0276-49-5640"
-  //   };
-  //   this.store.collection( 'poker_spot' ).doc('test').set( data );
-  // };
+  // 登録されていポーカースポットに位置座標を追加する
+  public addGeoInfo = () => {
+    this.store.firestore.collection( 'poker_spot' ).get().then( ( snapShot: QuerySnapshot<PokerSpot> ) => {
+      console.log( snapShot );
+
+      this.geoCording( snapShot.docs );
+
+    } )
+  };
+
+  public geoCording = ( docs: QueryDocumentSnapshot<PokerSpot>[] ) => {
+    const doc = docs[0];
+    const spot = doc.data() as PokerSpot;
+    if ( !!spot && !spot.geo ) {
+      this.mapProvider.geocoder.geocode( { address: spot.address1 }, ( result: GeocoderResult, status ) => {
+        if ( status == 'OK' ) {
+          spot.geo = Object.assign( {}, result[ 0 ] );
+          // ↓ 保存できないオブジェクトを削除する
+          delete spot.geo.geometry;
+          console.log( doc.id );
+          console.log( spot );
+          this.store.firestore.collection( 'poker_spot' ).doc( doc.id ).set( spot ).then( () => {
+            console.log( 'done' );
+
+            if ( docs.length > 1 ) {
+              docs.shift();
+              this.geoCording( docs );
+            }
+          } );
+        } else {
+          console.warn( status );
+          if ( docs.length > 1 ) {
+            docs.shift();
+            this.geoCording( docs );
+          }
+        }
+      });
+    } else {
+      console.warn( 'invalid spot address (count: ' + docs.length + ')' );
+      if ( docs.length > 1 ) {
+        docs.shift();
+        this.geoCording( docs );
+      }
+    }
+  };
 
 
 }

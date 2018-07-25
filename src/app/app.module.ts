@@ -13,6 +13,7 @@ import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { IonicStorageModule } from '@ionic/storage';
 import { Geolocation } from '@ionic-native/geolocation';
 import { AgmCoreModule } from '@agm/core';
+import { MapProvider } from '../providers/map/map';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { AgmCoreModule } from '@agm/core';
     StatusBar,
     SplashScreen,
     Geolocation,
-    { provide: ErrorHandler, useClass: IonicErrorHandler }
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    MapProvider
   ]
 })
 export class AppModule {}
