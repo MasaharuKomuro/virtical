@@ -6,12 +6,23 @@
 
 <ion-content>
 
+  <div class="map-container">
+    <agm-map
+            *ngIf="!!geo_position"
+            [latitude]="geo_position.coords.latitude"
+            [longitude]="geo_position.coords.longitude"
+            [zoom]="map_config.zoom"
+    >
+      <agm-marker [latitude]="geo_position.coords.latitude" [longitude]="geo_position.coords.longitude"></agm-marker>
+    </agm-map>
+  </div>
+
   <ion-list>
     <ion-item>
       <ion-label>
         <ion-icon name="search"></ion-icon>
       </ion-label>
-      <ion-input type="text" placeholder="検索 ( 店名、住所、電話 ) " [(ngModel)]="filter" ></ion-input>
+      <ion-input type="text" placeholder="検索 ( 店名、住所、電話 )" [(ngModel)]="filter"></ion-input>
     </ion-item>
   </ion-list>
 
@@ -20,7 +31,8 @@
       全{{ ( spots | async )?.length }}件
     </ion-list-header>
     <button ion-item *ngFor="let spot of spots | async">
-      {{ spot?.name }}
+      <a>{{ spot?.name }}</a>
+      <p>{{ spot?.address1 + spot?.address2 + ' | ' + spot?.address_description }}</p>
     </button>
   </ion-list>
 </ion-content>

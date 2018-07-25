@@ -6,12 +6,13 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { AngularFireModule } from 'angularfire2';
 import { LoginPageModule } from '../pages/login/login.module';
-import { firebaseConfig } from '../api_keys/firebase';
+import { dev_api_key, firebaseConfig } from '../api_keys/firebase';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { ControlPageModule } from '../pages/control/control.module';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { IonicStorageModule } from '@ionic/storage';
 import { Geolocation } from '@ionic-native/geolocation';
+import { AgmCoreModule } from '@agm/core';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,10 @@ import { Geolocation } from '@ionic-native/geolocation';
     IonicStorageModule.forRoot(),
     AngularFireModule.initializeApp(firebaseConfig,{}),
     AngularFireAuthModule,
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    AgmCoreModule.forRoot({
+      apiKey: dev_api_key
+    })
   ],
   bootstrap: [IonicApp],
   entryComponents: [
