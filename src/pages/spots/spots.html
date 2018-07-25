@@ -12,6 +12,7 @@
             [latitude]="geo_position.coords.latitude"
             [longitude]="geo_position.coords.longitude"
             [zoom]="map_config.zoom"
+            [streetViewControl]="false"
     >
       <agm-marker [latitude]="geo_position.coords.latitude" [longitude]="geo_position.coords.longitude"
                   [title]="'title'" [label]="'現在地'"
@@ -19,7 +20,7 @@
       >
         <agm-info-window>現在地</agm-info-window>
       </agm-marker>
-      <ng-container *ngFor="let spot of _spots">
+      <ng-container *ngFor="let spot of ( spots | async )">
         <agm-marker *ngIf="!!spot?.latitude && !!spot?.longitude"
                     [latitude]="spot?.latitude"
                     [longitude]="spot?.longitude"

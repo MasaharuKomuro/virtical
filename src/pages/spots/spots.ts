@@ -50,7 +50,6 @@ export class SpotsPage {
 
   set filter( value ) {
     this._filter = value;
-    console.log( 'set' );
     this.spots.emit( this.filterSpots() );
   }
 

@@ -99,7 +99,7 @@ export class ControlPage {
     const doc = docs[0];
     const spot = doc.data() as PokerSpot;
     if ( !!spot ) {
-      this.mapProvider.geocoder.geocode( { address: spot.address1 }, ( result: GeocoderResult, status ) => {
+      this.mapProvider.geocoder.geocode( { address: spot.address1 }, ( result: GeocoderResult[], status ) => {
         if ( status == 'OK' ) {
           spot.geo = Object.assign( {}, result[ 0 ] );
           // ↓ 保存できないオブジェクトを削除する
