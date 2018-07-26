@@ -113,14 +113,14 @@ export class ControlPage {
 
             if ( docs.length > 1 ) {
               docs.shift();
-              this.geoCording( docs );
+              setTimeout( _ => this.geoCording( docs ), 1000 );
             }
           } );
         } else {
           console.warn( status );
           if ( docs.length > 1 ) {
             docs.shift();
-            this.geoCording( docs );
+            setTimeout( _ => this.geoCording( docs ), 1000 );
           }
         }
       });
@@ -128,7 +128,7 @@ export class ControlPage {
       console.warn( 'invalid spot address (count: ' + docs.length + ')' );
       if ( docs.length > 1 ) {
         docs.shift();
-        this.geoCording( docs );
+        setTimeout( _ => this.geoCording( docs ), 1000 );
       }
     }
   };

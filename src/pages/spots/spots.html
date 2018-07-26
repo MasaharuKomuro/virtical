@@ -6,6 +6,7 @@
 
 <ion-content>
   <!--<button type="hidden" ion-button (click)="test()">test</button>-->
+  <!--<div [innerHtml]="debug_message"></div>-->
   <div class="map-container">
     <agm-map
             *ngIf="!!geo_position"
@@ -28,6 +29,7 @@
                     [label]="( index + 1 ).toString()"
                     [markerClickable]="true"
                     [openInfoWindow]="true"
+                    [animation]="'DROP'"
         >
           <agm-info-window>{{ spot.name }}</agm-info-window>
         </agm-marker>
@@ -51,6 +53,8 @@
     <button ion-item *ngFor="let spot of spots | async; let index = index">
       <a>{{ index + 1 }}: {{ spot?.name }}</a>
       <p>{{ spot?.address1 + spot?.address2 + ' | ' + spot?.address_description }}</p>
+      <p>{{ spot?.latitude }}</p>
+      <p>{{ spot?.longitude }}</p>
     </button>
   </ion-list>
 </ion-content>

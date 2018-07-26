@@ -3,7 +3,7 @@ import { IonicPage, LoadingController, NavController, NavParams, TextInput } fro
 import { AngularFirestore, QueryDocumentSnapshot, QuerySnapshot } from 'angularfire2/firestore';
 import { PokerSpot } from '../../model/pokerSpot';
 import { Storage } from '@ionic/storage';
-import { Coordinates, Geolocation, Geoposition } from '@ionic-native/geolocation';
+import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 
 @IonicPage()
 @Component( {
@@ -53,22 +53,28 @@ export class SpotsPage {
     this.spots.emit( this.filterSpots() );
   }
 
+  public debug_message: string = '';
+
   private sortWithDistance = () => {
     if ( !this.geo_position || this._spots.length === 0 ) {
       return;
     }
     const latitude = this.geo_position.coords.latitude;
     const longitude = this.geo_position.coords.longitude;
-    console.log( '>>> start' );
-    console.log( this._spots );
+
     this._spots.sort( ( a: PokerSpot, b: PokerSpot ) => {
+      this.debug_message += a.address1 + ' : ' + b.address1;
       if ( !a.geo && !b.geo ) {
+        this.debug_message += 'status 0' + '\n<br>';
         return 0;
       } else if ( !!a.geo && !b.geo ) {
+        this.debug_message += 'status 1' + '\n<br>';
         return 1;
-      } else if ( !a.geo && b.geo ) {
+      } else if ( !a.geo && !!b.geo ) {
+        this.debug_message += 'status -1' + '\n<br>';
         return -1;
       }
+      this.debug_message += '\n<br>';
 
       const dist_a = Math.sqrt(
         Math.pow( latitude - a.latitude, 2 ) +
@@ -78,8 +84,7 @@ export class SpotsPage {
         Math.pow( longitude - b.longitude, 2 ) );
       return ( dist_a > dist_b ) ? 1 : -1;
     });
-    console.log( '<<< end' );
-    console.log( this._spots );
+
     this.spots.emit( this._spots );
   };
 
