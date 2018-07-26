@@ -168,7 +168,7 @@ export class SpotsPage {
   // 全ての infoWindow を閉じる
   public closeAgmInfoWindows = () => {
     this.agmInfoWindows.forEach( ( agmInfoWindow: AgmInfoWindow ) => {
-      agmInfoWindow.cloßse();
+      agmInfoWindow.close();
     } );
   };
 
