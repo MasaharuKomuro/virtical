@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
-import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { AlertController, IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
 import { PokerSpot } from '../../../model/pokerSpot';
 import { AngularFirestore, QuerySnapshot } from 'angularfire2/firestore';
 import { CollectionReference } from 'angularfire2/firestore/interfaces';
-import { PlayerProvider } from '../../../providers/player/player';
 
 /**
  * Generated class for the SpotDetailPage page.
@@ -32,7 +31,7 @@ export class SpotDetailPage {
     private store: AngularFirestore,
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
-    private playerProvider: PlayerProvider
+    public modalCtrl: ModalController
     ) {
   }
 
@@ -71,5 +70,11 @@ export class SpotDetailPage {
       });
     });
   };
+
+  // コメント投稿画面を開きます
+  public openPostCommentModal = () => {
+    const modal = this.modalCtrl.create( 'PostCommentModalPage' );
+    modal.present();
+  }
 
 }

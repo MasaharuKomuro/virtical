@@ -8,7 +8,6 @@ import GeocoderResult = google.maps.GeocoderResult;
 import { AngularFireAuth } from 'angularfire2/auth';
 import { User } from 'firebase';
 import { Player } from '../../model/Player';
-import { CollectionReference } from 'angularfire2/firestore/interfaces';
 
 /**
  * Generated class for the ControlPage page.
@@ -151,7 +150,7 @@ export class ControlPage {
         type: 'email'
       });
       console.log( player );
-      this.store.collection( 'players', ( ref: CollectionReference ) => {
+      this.store.collection( 'players', ( ref ) => {
         ref.doc( user.uid ).set( Object.assign( {}, player ) );
       } );
     });
