@@ -14,7 +14,7 @@ export class MyApp {
 
   constructor(
     platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen,
-    private angularFireAuth: AngularFireAuth, private modalCtrl: ModalController
+    private auth: AngularFireAuth, private modalCtrl: ModalController
   ) {
       console.log( location.href );
     platform.ready().then(() => {
@@ -22,7 +22,7 @@ export class MyApp {
       // statusBar.styleDefault();
       // splashScreen.hide();
 
-      this.angularFireAuth.authState.subscribe( ( user: User ) => {
+      this.auth.authState.subscribe( ( user: User ) => {
 
         // ログインしていない
         if ( !user ) {

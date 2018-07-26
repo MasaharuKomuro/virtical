@@ -9,7 +9,7 @@ export class Player {
   public type: 'email'|'google'|'facebook';
   public photoURL?: string;
 
-  constructor ( player: Partial<Player> ) {
+  constructor ( player?: Partial<Player> ) {
     Object.assign( this, player );
   }
 }

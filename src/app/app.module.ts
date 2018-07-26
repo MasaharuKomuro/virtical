@@ -15,7 +15,7 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { AgmCoreModule } from '@agm/core';
 import { MapProvider } from '../providers/map/map';
 import { AgmDirectionModule } from 'agm-direction';
-import { UserProvider } from '../providers/user/user';
+import { PlayerProvider } from '../providers/player/player';
 
 @NgModule({
   declarations: [
@@ -44,7 +44,7 @@ import { UserProvider } from '../providers/user/user';
     SplashScreen,
     Geolocation,
     MapProvider,
-    UserProvider,
+    PlayerProvider,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
   ]
 })

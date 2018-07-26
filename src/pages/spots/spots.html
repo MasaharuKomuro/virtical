@@ -7,8 +7,6 @@
 <ion-content>
   <!--<button type="hidden" ion-button (click)="test()">test</button>-->
   <!--<div [innerHtml]="debug_message"></div>-->
-  {{ ( auth?.user | async )?.email }}
-  {{ ( auth?.user | async )?.displayName }}
   <div class="map-container">
     <agm-map
             *ngIf="!!my_position"

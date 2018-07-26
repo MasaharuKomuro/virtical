@@ -3,6 +3,7 @@ import { AlertController, IonicPage, LoadingController, NavController, NavParams
 import { PokerSpot } from '../../../model/pokerSpot';
 import { AngularFirestore, QuerySnapshot } from 'angularfire2/firestore';
 import { CollectionReference } from 'angularfire2/firestore/interfaces';
+import { PlayerProvider } from '../../../providers/player/player';
 
 /**
  * Generated class for the SpotDetailPage page.
@@ -23,14 +24,15 @@ export class SpotDetailPage {
 
   public spot: PokerSpot;
 
-  public id: string; // poker_spot.id
+  public spot_id: string; // poker_spot.id
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     private store: AngularFirestore,
     private loadingCtrl: LoadingController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private playerProvider: PlayerProvider
     ) {
   }
 
@@ -44,7 +46,7 @@ export class SpotDetailPage {
   private getSpotFromName = () => {
     const name: string = this.navParams.get( 'name' );
     const loader = this.loadingCtrl.create({ content: '読込中 ...' });
-    loader.present()
+    loader.present();
 
     this.store.collection( 'poker_spot', ( ref: CollectionReference ) => {
       console.log( ref );
@@ -61,7 +63,7 @@ export class SpotDetailPage {
           return;
         }
         this.spot = result.docs[0].data() as PokerSpot;
-        this.id = result.docs[0].id;
+        this.spot_id = result.docs[0].id;
         loader.dismiss();
       }).catch( error => {
         console.warn( error );

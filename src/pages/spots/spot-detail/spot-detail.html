@@ -7,8 +7,7 @@
 </ion-header>
 
 
-<ion-content padding>
-  {{ id }}
+<ion-content >
   <ion-card *ngIf="!!spot">
 
     <img src="assets/img/bjork-live.jpg" alt="">
@@ -33,6 +32,26 @@
       Followers
       <ion-badge item-end>260k</ion-badge>
     </ion-item>
+  </ion-card>
 
+  <ion-card>
+
+    <ion-card-content>
+      <ion-card-title>
+        コメント ( 0件 )
+      </ion-card-title>
+    </ion-card-content>
+
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <ion-avatar item-start>
+            <img src="img/avatar-cher.png">
+          </ion-avatar>
+          <h2>Cher</h2>
+          <p>Ugh. As if.</p>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
   </ion-card>
 </ion-content>

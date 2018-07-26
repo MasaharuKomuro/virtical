@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
-import { User } from 'firebase';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { CollectionReference } from 'angularfire2/firestore/interfaces';
-import set = Reflect.set;
+import { PlayerProvider } from '../../providers/player/player';
 
 /**
  * Generated class for the SettingPage page.
@@ -20,8 +19,6 @@ import set = Reflect.set;
 })
 export class SettingPage {
 
-  public uid: string;
-
   public displayName: string;
 
   public photoURL: string;
@@ -31,21 +28,13 @@ export class SettingPage {
     public auth: AngularFireAuth,
     private loadingCtrl: LoadingController,
     private store: AngularFirestore,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private playerProvider: PlayerProvider
     ) {
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SettingPage');
-    const loading = this.loadingCtrl.create( { content: '読込中...' } );
-    loading.present();
-    this.auth.user.subscribe( ( user: User ) => {
-      console.log( user );
-      this.displayName = user.displayName;
-      this.photoURL = user.photoURL;
-      this.uid = user.uid;
-      loading.dismiss();
-    });
   }
 
   // プロフィールを更新する
@@ -59,13 +48,13 @@ export class SettingPage {
         set_data['displayName'] = this.displayName;
       }
       if ( !!this.photoURL ) {
-        set_data['photoURL'] = this.displayName;
+        set_data['photoURL'] = this.photoURL;
       }
       if ( Object.keys( set_data ).length === 0 ) {
         // 入力されていません
         loading.dismiss();
       }
-      ref.doc( this.uid ).set( set_data, { merge: true } ).then( () => {
+      ref.doc( this.playerProvider.player.uid ).set( set_data, { merge: true } ).then( () => {
         loading.dismiss();
       }).catch( error => {
         loading.dismiss();
