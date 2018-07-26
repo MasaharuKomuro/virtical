@@ -1,6 +1,6 @@
 import { Component, EventEmitter, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { IonicPage, LoadingController, NavController, NavParams, TextInput } from 'ionic-angular';
-import { AngularFirestore, QueryDocumentSnapshot, QuerySnapshot } from 'angularfire2/firestore';
+import { AngularFirestore } from 'angularfire2/firestore';
 import { PokerSpot } from '../../model/pokerSpot';
 import { Storage } from '@ionic/storage';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
@@ -98,11 +98,7 @@ export class SpotsPage {
     this.spots.emit( this._spots );
   };
 
-  ionViewDidLoad() {
-    console.log( 'ionViewDidLoad SpotsPage' );
-    this.storage.remove('spots');
-
-    // 位置情報を取得
+  private getMyLocation = () => {
     this.geolocation.getCurrentPosition().then( ( position: Geoposition ) => {
       console.log( position );
       this.my_position     = new google.maps.LatLng( position.coords.latitude, position.coords.longitude );
@@ -112,35 +108,52 @@ export class SpotsPage {
     } ).catch( ( error ) => {
       console.warn( 'Error getting location', error );
     } );
+  };
 
+  private getSpots = () => {
     const loader = this.loadingCtrl.create( {
       content: '読込中...'
     } );
     loader.present();
 
-    this.storage.get( 'spots' ).then( ( spots: string ) => {
-      this._spots = JSON.parse( spots ) || [];
+    this.store.collection( 'poker_spot' ).valueChanges().subscribe( ( spots: PokerSpot[] ) => {
+      console.log( spots );
+      spots.map( ( spot: PokerSpot ) => {
+        this._spots.push( new PokerSpot( spot ) );
+      } );
+      this.storage.set( 'spots', JSON.stringify( this._spots ) );
+      this.spots.emit( this._spots );
+      loader.dismiss();
+      this.sortWithDistance();
+    });
+  };
 
-      if ( !!this._spots && this._spots.length !== 0 ) {
-        this.spots.emit( this._spots );
-        loader.dismiss();
-      } else {
-        console.log( 'ポーカースポット情報を取得' );
-        this.store.firestore.collection( 'poker_spot' ).get().then( ( snapShot: QuerySnapshot<PokerSpot> ) => {
-          console.log( snapShot );
-          snapShot.docs.map( ( doc: QueryDocumentSnapshot<PokerSpot> ) => {
-            this._spots.push( new PokerSpot( doc.data() as PokerSpot ) );
-          } );
-          this.storage.set( 'spots', JSON.stringify( this._spots ) );
-          this.spots.emit( this._spots );
-          loader.dismiss();
-          this.sortWithDistance();
-        } ).catch( error => {
-          console.log( error );
-          loader.dismiss();
-        } );
-      }
-    } );
+  ionViewDidLoad() {
+    console.log( 'ionViewDidLoad SpotsPage' );
+    // this.storage.remove('spots');
+
+    // 位置情報を取得
+    this.getMyLocation();
+
+    // スポット一覧を取得する
+    this.getSpots();
+
+    // this.storage.get( 'spots' ).then( ( spots: string ) => {
+    //   this._spots = JSON.parse( spots ) || [];
+    //
+    //   if ( !!this._spots && this._spots.length !== 0 ) {
+    //     this.spots.emit( this._spots );
+    //     loader.dismiss();
+    //   } else {
+    //     console.log( 'ポーカースポット情報を取得' );
+    //     this.store.firestore.collection( 'poker_spot' ).get().then( ( snapShot: QuerySnapshot<PokerSpot> ) => {
+    //
+    //     } ).catch( error => {
+    //       console.log( error );
+    //       loader.dismiss();
+    //     } );
+    //   }
+    // } );
   }
 
   test = () => {

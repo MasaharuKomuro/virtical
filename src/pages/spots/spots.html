@@ -64,8 +64,8 @@
     <ion-item *ngFor="let spot of spots | async; let index = index">
       <a (click)="setCenterPosition( spot, event )">{{ index + 1 }}: {{ spot?.name }}</a>
       <p>{{ spot?.address1 + spot?.address2 + ' | ' + spot?.address_description }}</p>
-      <p>{{ spot?.latitude }}</p>
-      <p>{{ spot?.longitude }}</p>
+      <p>{{ spot?.tel }}</p>
+      <p>Debug: {{ spot?.latitude }} : {{ spot?.longitude }}</p>
     </ion-item>
   </ion-list>
 </ion-content>
