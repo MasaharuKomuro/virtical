@@ -20,7 +20,9 @@ export class SpotsPage {
   public spots = new EventEmitter<PokerSpot[]>();
 
   // 現在地
-  public geo_position: Geoposition;
+  public my_position: google.maps.LatLng;
+  // マップの中心地
+  public center_position: google.maps.LatLng;
 
   public map_config = {
     zoom: 11
@@ -67,11 +69,11 @@ export class SpotsPage {
 
   // 距離の近い順に並び替える
   private sortWithDistance = () => {
-    if ( !this.geo_position || this._spots.length === 0 ) {
+    if ( !this.my_position || this._spots.length === 0 ) {
       return;
     }
-    const latitude = this.geo_position.coords.latitude;
-    const longitude = this.geo_position.coords.longitude;
+    const latitude = this.my_position.lat();
+    const longitude = this.my_position.lng();
 
     this._spots.sort( ( a: PokerSpot, b: PokerSpot ) => {
       this.debug_message += a.address1 + ' : ' + b.address1;
@@ -103,7 +105,8 @@ export class SpotsPage {
     // 位置情報を取得
     this.geolocation.getCurrentPosition().then( ( position: Geoposition ) => {
       console.log( position );
-      this.geo_position = position;
+      this.my_position     = new google.maps.LatLng( position.coords.latitude, position.coords.longitude );
+      this.center_position = this.my_position;
       setTimeout( _ => this.spots.emit( this._spots ) );
       this.sortWithDistance();
     } ).catch( ( error ) => {
@@ -156,13 +159,13 @@ export class SpotsPage {
       this.show_direction = true;
       // 現在地・目的地をセット
       this.origin = new google.maps.LatLng(
-        this.geo_position.coords.latitude,
-        this.geo_position.coords.longitude );
+        this.my_position.lat(),
+        this.my_position.lng() );
       this.destination = new google.maps.LatLng( spot.latitude, spot.longitude );
       // フィルターに目的地を追加
       this.filter = spot.name;
       this.closeAgmInfoWindows();
-    }, 100);
+    }, 300);
   };
 
   // 全ての infoWindow を閉じる
@@ -172,5 +175,11 @@ export class SpotsPage {
     } );
   };
 
-  public setDestination;
+  // マップの中央位置を選択した spot に変更する
+  public setCenterPosition = ( spot: PokerSpot, event: MouseEvent = null ) => {
+    if ( !!event ) {
+      event.stopPropagation();
+    }
+    this.center_position = new google.maps.LatLng( spot.latitude, spot.longitude );
+  }
 }

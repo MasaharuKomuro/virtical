@@ -9,13 +9,13 @@
   <!--<div [innerHtml]="debug_message"></div>-->
   <div class="map-container">
     <agm-map
-            *ngIf="!!geo_position"
-            [latitude]="geo_position.coords.latitude"
-            [longitude]="geo_position.coords.longitude"
+            *ngIf="!!my_position"
+            [latitude]="center_position.lat()"
+            [longitude]="center_position.lng()"
             [zoom]="map_config.zoom"
             [streetViewControl]="false"
     >
-      <agm-marker [latitude]="geo_position.coords.latitude" [longitude]="geo_position.coords.longitude"
+      <agm-marker [latitude]="my_position.lat()" [longitude]="my_position.lng()"
                   [title]="'title'" [label]="'現在地'"
                   [iconUrl]="'assets/imgs/map_0.png'"
       >
@@ -61,11 +61,11 @@
     <ion-list-header>
       全{{ ( spots | async )?.length }}件
     </ion-list-header>
-    <button ion-item *ngFor="let spot of spots | async; let index = index">
-      <a>{{ index + 1 }}: {{ spot?.name }}</a>
+    <ion-item *ngFor="let spot of spots | async; let index = index">
+      <a (click)="setCenterPosition( spot, event )">{{ index + 1 }}: {{ spot?.name }}</a>
       <p>{{ spot?.address1 + spot?.address2 + ' | ' + spot?.address_description }}</p>
       <p>{{ spot?.latitude }}</p>
       <p>{{ spot?.longitude }}</p>
-    </button>
+    </ion-item>
   </ion-list>
 </ion-content>
