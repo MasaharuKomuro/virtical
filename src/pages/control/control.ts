@@ -5,6 +5,10 @@ import * as moment from 'moment-mini';
 import { PokerSpot } from '../../model/pokerSpot';
 import { MapProvider } from '../..//providers/map/map';
 import GeocoderResult = google.maps.GeocoderResult;
+import { AngularFireAuth } from 'angularfire2/auth';
+import { User } from 'firebase';
+import { Player } from '../../model/Player';
+import { CollectionReference } from 'angularfire2/firestore/interfaces';
 
 /**
  * Generated class for the ControlPage page.
@@ -22,7 +26,8 @@ export class ControlPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
               private store: AngularFirestore,
-              private mapProvider: MapProvider
+              private mapProvider: MapProvider,
+              private auth: AngularFireAuth
               ) {
   }
 
@@ -77,6 +82,8 @@ export class ControlPage {
       { name: "WABISABI", address1: "広島県福山市神辺町川南816-1", address2: "", address_description: "JR / 神辺駅 徒歩13分", tel: "084-962-2811", updated_at: now },
       { name: "backdoorbar", address1: "福岡市中央区西中洲1-4", address2: "ロスぺリタ西中洲Ⅱ 7F-B", address_description: "福岡市地下鉄天神南駅徒歩7分", tel: "092-791-1010", updated_at: now },
       { name: "Bar BULLETS", address1: "沖縄県那覇市牧志2-18-7", address2: "伸産業ビル2Ｆ", address_description: "モノレール / 美栄橋駅 徒歩1分", tel: "080-2753-9831", updated_at: now },
+
+      { name: "GINZA CASINO&BAR PARAJA", address1: "東京都中央区銀座6-3-15", address2: "長谷第2ビルB1", address_description: "東京メトロ銀座駅／日比谷駅／有楽町駅： C2出口より徒歩2分、A5出口より徒歩3分", tel: "03-6264-6550", updated_at: now, url: "https://ginza-casino.jp" },
     ];
 
     spots.map( ( elem ) => {
@@ -102,6 +109,7 @@ export class ControlPage {
       this.mapProvider.geocoder.geocode( { address: spot.address1 }, ( result: GeocoderResult[], status ) => {
         if ( status == 'OK' ) {
           spot.geo = Object.assign( {}, result[ 0 ] );
+          spot.address1 = spot.geo.formatted_address.match( /.*\d{3}-\d{4} (.*)/ )[1];
           // ↓ 保存できないオブジェクトを削除する
           spot.latitude = spot.geo.geometry.location.lat();
           spot.longitude = spot.geo.geometry.location.lng();
@@ -133,5 +141,20 @@ export class ControlPage {
     }
   };
 
+  public addUser = () => {
+    this.auth.user.subscribe( ( user: User ) => {
+      const player = new Player({
+        name: 'Masaharu Komuro',
+        displayName: 'Komuro',
+        email: user.email,
+        uid: user.uid,
+        type: 'email'
+      });
+      console.log( player );
+      this.store.collection( 'players', ( ref: CollectionReference ) => {
+        ref.doc( user.uid ).set( Object.assign( {}, player ) );
+      } );
+    });
+  };
 
 }

@@ -23,7 +23,7 @@ export class SpotDetailPage {
 
   public spot: PokerSpot;
 
-  public id: string;
+  public id: string; // poker_spot.id
 
   constructor(
     public navCtrl: NavController,
@@ -40,7 +40,7 @@ export class SpotDetailPage {
     this.getSpotFromName();
   }
 
-  // スポットを名前から検索します
+  // スポットを名前からスポットの全情報を検索する
   private getSpotFromName = () => {
     const name: string = this.navParams.get( 'name' );
     const loader = this.loadingCtrl.create({ content: '読込中 ...' });

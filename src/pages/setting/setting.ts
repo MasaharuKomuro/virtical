@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
 import { User } from 'firebase';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { AngularFirestore } from 'angularfire2/firestore';
+import { CollectionReference } from 'angularfire2/firestore/interfaces';
+import set = Reflect.set;
 
 /**
  * Generated class for the SettingPage page.
@@ -17,6 +20,8 @@ import { AngularFireAuth } from 'angularfire2/auth';
 })
 export class SettingPage {
 
+  public uid: string;
+
   public displayName: string;
 
   public photoURL: string;
@@ -24,7 +29,10 @@ export class SettingPage {
   constructor(
     public navCtrl: NavController, public navParams: NavParams,
     public auth: AngularFireAuth,
-    private loadingCtrl: LoadingController ) {
+    private loadingCtrl: LoadingController,
+    private store: AngularFirestore,
+    private alertCtrl: AlertController
+    ) {
   }
 
   ionViewDidLoad() {
@@ -32,17 +40,41 @@ export class SettingPage {
     const loading = this.loadingCtrl.create( { content: '読込中...' } );
     loading.present();
     this.auth.user.subscribe( ( user: User ) => {
+      console.log( user );
       this.displayName = user.displayName;
       this.photoURL = user.photoURL;
+      this.uid = user.uid;
       loading.dismiss();
     });
   }
 
   // プロフィールを更新する
   public updateUserProfile = () => {
-    this.auth.user.subscribe( ( user: User ) => {
-      user.updateProfile({ displayName: this.displayName, photoURL: this.photoURL })
-    });
+    const loading = this.loadingCtrl.create( { content: '読込中...' } );
+    loading.present();
+
+    this.store.collection( 'players', ( ref: CollectionReference ) => {
+      const set_data = {};
+      if ( !!this.displayName ) {
+        set_data['displayName'] = this.displayName;
+      }
+      if ( !!this.photoURL ) {
+        set_data['photoURL'] = this.displayName;
+      }
+      if ( Object.keys( set_data ).length === 0 ) {
+        // 入力されていません
+        loading.dismiss();
+      }
+      ref.doc( this.uid ).set( set_data, { merge: true } ).then( () => {
+        loading.dismiss();
+      }).catch( error => {
+        loading.dismiss();
+        this.alertCtrl.create( {
+          title: '更新に失敗しました。',
+          buttons: ['OK']
+        } )
+      });
+    } );
   };
 
 }

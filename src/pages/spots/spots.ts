@@ -5,7 +5,6 @@ import { PokerSpot } from '../../model/pokerSpot';
 import { Storage } from '@ionic/storage';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 import { AgmInfoWindow } from '@agm/core';
-import { UserProvider } from '../../providers/user/user';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 @IonicPage()
