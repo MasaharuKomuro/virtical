@@ -26,7 +26,7 @@ export class LoginPage {
     public viewCtrl: ViewController,
     public angularFireAuth: AngularFireAuth,
     public alertCtrl: AlertController,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
   ) {
   }
 
@@ -39,7 +39,7 @@ export class LoginPage {
       content: "Please wait..."
     });
     loader.present();
-    this.angularFireAuth.auth.signInWithEmailAndPassword( this.email, this.password ).then( () => {
+    this.angularFireAuth.auth.signInWithEmailAndPassword( this.email, this.password ).then( ( credential: firebase.auth.UserCredential ) => {
       loader.dismiss();
       this.viewCtrl.dismiss();
     } ).catch( err => {

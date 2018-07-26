@@ -15,6 +15,7 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { AgmCoreModule } from '@agm/core';
 import { MapProvider } from '../providers/map/map';
 import { AgmDirectionModule } from 'agm-direction';
+import { UserProvider } from '../providers/user/user';
 
 @NgModule({
   declarations: [
@@ -42,8 +43,9 @@ import { AgmDirectionModule } from 'agm-direction';
     StatusBar,
     SplashScreen,
     Geolocation,
+    MapProvider,
+    UserProvider,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    MapProvider
   ]
 })
 export class AppModule {}

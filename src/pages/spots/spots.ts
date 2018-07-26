@@ -5,6 +5,8 @@ import { PokerSpot } from '../../model/pokerSpot';
 import { Storage } from '@ionic/storage';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 import { AgmInfoWindow } from '@agm/core';
+import { UserProvider } from '../../providers/user/user';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 @IonicPage()
 @Component( {
@@ -46,7 +48,8 @@ export class SpotsPage {
     private store: AngularFirestore,
     private loadingCtrl: LoadingController,
     private storage: Storage,
-    private geolocation: Geolocation
+    private geolocation: Geolocation,
+    public auth: AngularFireAuth
   ) {}
 
   // フィルターリングキーワード

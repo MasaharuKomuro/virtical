@@ -24,8 +24,8 @@ export class ArticlePage {
   public id: number;
 
   ionViewDidLoad() {
-    this.id = parseInt( this.navParams.get( 'id' ), 10 );
     console.log('ionViewDidLoad ArticlePage');
+    this.id = parseInt( this.navParams.get( 'id' ), 10 );
   }
 
 }
