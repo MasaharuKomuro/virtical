@@ -73,7 +73,7 @@ export class SpotDetailPage {
 
   // コメント投稿画面を開きます
   public openPostCommentModal = () => {
-    const modal = this.modalCtrl.create( 'PostCommentModalPage' );
+    const modal = this.modalCtrl.create( 'PostCommentModalPage', { spot_id: this.spot_id } );
     modal.present();
   }
 

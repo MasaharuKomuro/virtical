@@ -37,6 +37,6 @@
     </p>
   </ion-list>
   <button ion-button full (click)="postMessage()"
-          [disabled]="comment.length > max_comment_length"
+          [disabled]="!title || !comment || comment.length > this.max_comment_length"
   >投稿</button>
 </ion-content>
