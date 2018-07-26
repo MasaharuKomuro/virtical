@@ -31,8 +31,19 @@
                     [openInfoWindow]="true"
                     [animation]="'DROP'"
         >
-          <agm-info-window>{{ spot.name }}</agm-info-window>
+          <agm-info-window>
+            <p>{{ spot.name }}<p>
+            <a (click)="showDirection( spot )">経路表示</a>
+          </agm-info-window>
         </agm-marker>
+        <agm-direction
+                *ngIf="!!origin && !!destination"
+                [origin]="origin"
+                [destination]="destination"
+                [travelMode]="'WALKING'"
+                [visible]="show_direction"
+        >
+        </agm-direction>
       </ng-container>
     </agm-map>
   </div>

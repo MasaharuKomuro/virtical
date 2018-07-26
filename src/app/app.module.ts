@@ -14,6 +14,7 @@ import { IonicStorageModule } from '@ionic/storage';
 import { Geolocation } from '@ionic-native/geolocation';
 import { AgmCoreModule } from '@agm/core';
 import { MapProvider } from '../providers/map/map';
+import { AgmDirectionModule } from 'agm-direction';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { MapProvider } from '../providers/map/map';
     AngularFirestoreModule,
     AgmCoreModule.forRoot({
       apiKey: dev_api_key
-    })
+    }),
+    AgmDirectionModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [

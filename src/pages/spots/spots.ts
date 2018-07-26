@@ -1,9 +1,10 @@
-import { Component, EventEmitter, ViewChild } from '@angular/core';
+import { Component, EventEmitter, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { IonicPage, LoadingController, NavController, NavParams, TextInput } from 'ionic-angular';
 import { AngularFirestore, QueryDocumentSnapshot, QuerySnapshot } from 'angularfire2/firestore';
 import { PokerSpot } from '../../model/pokerSpot';
 import { Storage } from '@ionic/storage';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
+import { AgmInfoWindow } from '@agm/core';
 
 @IonicPage()
 @Component( {
@@ -32,6 +33,11 @@ export class SpotsPage {
     } );
   };
 
+  // 現在地
+  public origin: google.maps.LatLng = null;
+  // 目的地
+  public destination: google.maps.LatLng = null;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -55,6 +61,11 @@ export class SpotsPage {
 
   public debug_message: string = '';
 
+  @ViewChildren( AgmInfoWindow ) agmInfoWindows: QueryList<AgmInfoWindow>;
+
+  public show_direction: boolean = false;
+
+  // 距離の近い順に並び替える
   private sortWithDistance = () => {
     if ( !this.geo_position || this._spots.length === 0 ) {
       return;
@@ -65,13 +76,10 @@ export class SpotsPage {
     this._spots.sort( ( a: PokerSpot, b: PokerSpot ) => {
       this.debug_message += a.address1 + ' : ' + b.address1;
       if ( !a.geo && !b.geo ) {
-        this.debug_message += 'status 0' + '\n<br>';
         return 0;
       } else if ( !!a.geo && !b.geo ) {
-        this.debug_message += 'status 1' + '\n<br>';
         return 1;
       } else if ( !a.geo && !!b.geo ) {
-        this.debug_message += 'status -1' + '\n<br>';
         return -1;
       }
       this.debug_message += '\n<br>';
@@ -137,4 +145,32 @@ export class SpotsPage {
     console.log( this._spots );
     this.spots.emit( this._spots);
   };
+
+  // 経路を表示する
+  showDirection = ( spot: PokerSpot ) => {
+    console.log( 'show direction' );
+    console.log( spot );
+    this.show_direction = false;
+    // 前の経路を削除するために、setTimeout に逃す
+    setTimeout( _ => {
+      this.show_direction = true;
+      // 現在地・目的地をセット
+      this.origin = new google.maps.LatLng(
+        this.geo_position.coords.latitude,
+        this.geo_position.coords.longitude );
+      this.destination = new google.maps.LatLng( spot.latitude, spot.longitude );
+      // フィルターに目的地を追加
+      this.filter = spot.name;
+      this.closeAgmInfoWindows();
+    }, 100);
+  };
+
+  // 全ての infoWindow を閉じる
+  public closeAgmInfoWindows = () => {
+    this.agmInfoWindows.forEach( ( agmInfoWindow: AgmInfoWindow ) => {
+      agmInfoWindow.cloßse();
+    } );
+  };
+
+  public setDestination;
 }
