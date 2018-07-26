@@ -133,30 +133,12 @@ export class SpotsPage {
 
   ionViewDidLoad() {
     console.log( 'ionViewDidLoad SpotsPage' );
-    // this.storage.remove('spots');
 
     // 位置情報を取得
     this.getMyLocation();
 
     // スポット一覧を取得する
     this.getSpots();
-
-    // this.storage.get( 'spots' ).then( ( spots: string ) => {
-    //   this._spots = JSON.parse( spots ) || [];
-    //
-    //   if ( !!this._spots && this._spots.length !== 0 ) {
-    //     this.spots.emit( this._spots );
-    //     loader.dismiss();
-    //   } else {
-    //     console.log( 'ポーカースポット情報を取得' );
-    //     this.store.firestore.collection( 'poker_spot' ).get().then( ( snapShot: QuerySnapshot<PokerSpot> ) => {
-    //
-    //     } ).catch( error => {
-    //       console.log( error );
-    //       loader.dismiss();
-    //     } );
-    //   }
-    // } );
   }
 
   test = () => {

@@ -21,9 +21,6 @@ export class MyApp {
 
       // statusBar.styleDefault();
       // splashScreen.hide();
-      this.angularFireAuth.user.subscribe( ( user: User ) => {
-        user.updateProfile({ displayName: 'Masaharu Komuro', photoURL: '' })
-      });
 
       this.angularFireAuth.authState.subscribe( ( user: User ) => {
 

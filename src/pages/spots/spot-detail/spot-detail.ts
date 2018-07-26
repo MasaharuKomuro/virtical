@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
-import { PokerSpot } from 'src/model/pokerSpot';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { PokerSpot } from '../../../model/pokerSpot';
+import { AngularFirestore, QuerySnapshot } from 'angularfire2/firestore';
 import { CollectionReference } from 'angularfire2/firestore/interfaces';
-import { QuerySnapshot } from 'firebase';
 
 /**
  * Generated class for the SpotDetailPage page.
