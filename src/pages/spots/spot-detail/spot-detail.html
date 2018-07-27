@@ -9,9 +9,6 @@
 
 <ion-content >
   <ion-card *ngIf="!!spot">
-
-    <img src="assets/img/bjork-live.jpg" alt="">
-
     <ion-card-content>
       <ion-card-title>
         {{ spot?.name }}
@@ -34,23 +31,18 @@
     </ion-item>
   </ion-card>
 
-  <ion-card>
-    <button ion-button float-right margin-top (click)="openPostCommentModal()">
-      <ion-icon name="add"></ion-icon>&nbsp;コメントを投稿
-    </button>
+  <p style="font-size: 1.3em; line-height: 2.2;" float-left margin-left>
+    コメント ( {{ comments.length }}件 )</p>
+  <button ion-button float-right margin-top margin-right (click)="openPostCommentModal()">
+    <ion-icon name="add"></ion-icon>&nbsp;コメントを投稿
+  </button>
+
+  <ion-card *ngFor="let comment of comments">
     <ion-card-content>
       <ion-card-title>
-        コメント ( 3件 )
+        {{ comment.title }}
       </ion-card-title>
-    </ion-card-content>
-
-    <ion-card-content>
-      <ion-list>
-        <ion-item>
-          <h2>Cher</h2>
-          <p>Ugh. As if.</p>
-        </ion-item>
-      </ion-list>
+      {{ comment.comment }}
     </ion-card-content>
   </ion-card>
 </ion-content>

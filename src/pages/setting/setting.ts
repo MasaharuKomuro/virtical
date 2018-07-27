@@ -4,6 +4,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { CollectionReference } from 'angularfire2/firestore/interfaces';
 import { PlayerProvider } from '../../providers/player/player';
+import { Player } from '../../model/Player';
 
 /**
  * Generated class for the SettingPage page.
@@ -23,14 +24,26 @@ export class SettingPage {
 
   public photoURL: string;
 
+  public player: Player;
+
   constructor(
     public navCtrl: NavController, public navParams: NavParams,
     public auth: AngularFireAuth,
     private loadingCtrl: LoadingController,
     private store: AngularFirestore,
     private alertCtrl: AlertController,
-    private playerProvider: PlayerProvider
+    public playerProvider: PlayerProvider
     ) {
+    const wait_for_player = setInterval( () => {
+      if ( !!this.playerProvider.player ) {
+        clearInterval( wait_for_player );
+        this.playerProvider.player.subscribe( ( player: Player ) => {
+          this.displayName = player.displayName;
+          this.photoURL    = player.photoURL;
+          this.player = player;
+        } );
+      }
+    }, 100);
   }
 
   ionViewDidLoad() {
@@ -42,19 +55,22 @@ export class SettingPage {
     const loading = this.loadingCtrl.create( { content: '読込中...' } );
     loading.present();
 
+    // 更新用のデータを作成する
+    const set_data = {};
+    if ( !!this.displayName ) {
+      set_data['displayName'] = this.displayName;
+    }
+    if ( !!this.photoURL ) {
+      set_data['photoURL'] = this.photoURL;
+    }
+    if ( Object.keys( set_data ).length === 0 ) {
+      // 入力されていません
+      loading.dismiss();
+    }
+
+    // 更新を実行する
     this.store.collection( 'players', ( ref: CollectionReference ) => {
-      const set_data = {};
-      if ( !!this.displayName ) {
-        set_data['displayName'] = this.displayName;
-      }
-      if ( !!this.photoURL ) {
-        set_data['photoURL'] = this.photoURL;
-      }
-      if ( Object.keys( set_data ).length === 0 ) {
-        // 入力されていません
-        loading.dismiss();
-      }
-      ref.doc( this.playerProvider.player.uid ).set( set_data, { merge: true } ).then( () => {
+      ref.doc( this.player.uid ).set( set_data, { merge: true } ).then( () => {
         loading.dismiss();
       }).catch( error => {
         loading.dismiss();
@@ -63,6 +79,7 @@ export class SettingPage {
           buttons: ['OK']
         } )
       });
+      return ref;
     } );
   };
 

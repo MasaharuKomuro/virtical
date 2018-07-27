@@ -11,7 +11,6 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { User } from 'firebase';
 import { Comment } from '../../../model/Comment';
-import * as moment from 'moment-mini';
 
 /**
  * Generated class for the PostCommentModalPage page.
@@ -83,9 +82,9 @@ export class PostCommentModalPage {
       const comment = new Comment( {
         title: this.title,
         comment: this.comment,
-        uid: user.uid,
-        created_at: moment().format( 'YYYY-MM-DD H:mm:ss' )
+        uid: user.uid
       } );
+
       this.store.collection( 'spot_comments', ( ref ) => {
         const spot_id = this.navParams.get( 'spot_id' );
         ref.doc( spot_id ).collection( 'comments' ).add(
@@ -100,6 +99,7 @@ export class PostCommentModalPage {
             buttons: ['OK']
           } );
         });
+        return ref;
       } );
     });
   };

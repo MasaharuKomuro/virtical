@@ -152,6 +152,7 @@ export class ControlPage {
       console.log( player );
       this.store.collection( 'players', ( ref ) => {
         ref.doc( user.uid ).set( Object.assign( {}, player ) );
+        return ref;
       } );
     });
   };

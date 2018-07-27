@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { AlertController, IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
 import { PokerSpot } from '../../../model/pokerSpot';
-import { AngularFirestore, QuerySnapshot } from 'angularfire2/firestore';
+import { AngularFirestore, Query } from 'angularfire2/firestore';
 import { CollectionReference } from 'angularfire2/firestore/interfaces';
+import { Loading } from 'ionic-angular/components/loading/loading';
+import { Comment } from '../../../model/Comment';
 
 /**
  * Generated class for the SpotDetailPage page.
@@ -24,6 +26,8 @@ export class SpotDetailPage {
   public spot: PokerSpot;
 
   public spot_id: string; // poker_spot.id
+
+  public comments: Comment[] = [];
 
   constructor(
     public navCtrl: NavController,
@@ -48,26 +52,34 @@ export class SpotDetailPage {
     loader.present();
 
     this.store.collection( 'poker_spot', ( ref: CollectionReference ) => {
-      console.log( ref );
-      ref.where( 'name', '==', name ).get().then( ( result: QuerySnapshot ) => {
-        console.log( result );
-        if ( result.docs.length === 0 ) {
-          console.warn( '店を検索できません。' );
-          loader.dismiss();
-          const alert = this.alertCtrl.create({
-            title: 'スポットを検索できませんでした。',
-            buttons: ['OK']
-          });
-          alert.present();
-          return;
-        }
-        this.spot = result.docs[0].data() as PokerSpot;
-        this.spot_id = result.docs[0].id;
+      const query: Query = ref.where( 'name', '==', name )
+      return query;
+    }).snapshotChanges().subscribe( ( spots ) => {
+
+      if ( spots.length === 0 ) {
+        console.warn( 'スポットを検索できません。' );
         loader.dismiss();
-      }).catch( error => {
-        console.warn( error );
-        loader.dismiss();
+        const alert = this.alertCtrl.create({
+          title: 'スポットを検索できませんでした。',
+          buttons: ['OK']
+        });
+        alert.present();
+        return;
+      }
+      this.spot = new PokerSpot( spots[0].payload.doc.data() );
+      this.spot_id = spots[0].payload.doc.id;
+
+      // コメントを取得する
+      this.getComments( loader );
+    }, error => {
+      console.warn( 'スポットを検索できません。' );
+      loader.dismiss();
+      const alert = this.alertCtrl.create({
+        title: 'スポットを検索できませんでした。',
+        buttons: ['OK']
       });
+      alert.present();
+      return;
     });
   };
 
@@ -75,6 +87,24 @@ export class SpotDetailPage {
   public openPostCommentModal = () => {
     const modal = this.modalCtrl.create( 'PostCommentModalPage', { spot_id: this.spot_id } );
     modal.present();
-  }
+  };
+
+  // コメントを取得する
+  public getComments = ( loader?: Loading ) => {
+    this.store.collection( 'spot_comments', ( ref ) => {
+      const query: Query = ref.doc( this.spot_id ).collection( 'comments' )
+        .orderBy( 'created_at', 'desc' );
+      console.log( ref );
+      return query;
+    } ).valueChanges().subscribe( ( comments: Comment[] ) => {
+      console.log( 'コメントが更新されました' );
+      this.comments = comments;
+
+      // ユーザ情報を取得する
+      if ( !!this.loadingCtrl ) {
+        loader.dismiss();
+      }
+    });
+  };
 
 }

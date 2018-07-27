@@ -3,6 +3,7 @@ import { Player } from '../../model/Player';
 import { User } from 'firebase';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
+import { Observable } from 'rxjs/Rx';
 
 /*
   Generated class for the UserProvider provider.
@@ -15,7 +16,7 @@ export class PlayerProvider {
 
   public user: User;
 
-  public player: Player;
+  public player: Observable<Player>;
 
   constructor(
     private auth: AngularFireAuth,
@@ -25,11 +26,7 @@ export class PlayerProvider {
 
     this.auth.user.subscribe( ( user: User ) => {
       this.user = user;
-      this.store.collection( 'players', ( ref ) => {
-        ref.doc( this.user.uid ).get().then( ( player: Player ) => {
-          this.player = new Player( player );
-        });
-      });
+      this.player = this.store.doc( 'players/' + this.user.uid ).valueChanges() as Observable<Player>;
     })
   }
 

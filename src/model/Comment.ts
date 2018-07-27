@@ -1,3 +1,5 @@
+import * as moment from 'moment-mini';
+
 export class Comment {
   title: string;
 
@@ -5,7 +7,7 @@ export class Comment {
 
   uid: string;
 
-  created_at: string;
+  created_at: number = moment().unix();
 
   constructor( comment?: Partial<Comment> ) {
     Object.assign( this, comment );
