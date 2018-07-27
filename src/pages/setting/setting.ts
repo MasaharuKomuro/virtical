@@ -34,13 +34,18 @@ export class SettingPage {
     private alertCtrl: AlertController,
     public playerProvider: PlayerProvider
     ) {
+    const loading = this.loadingCtrl.create( { content: '読込中 ...'} );
+    loading.present();
     const wait_for_player = setInterval( () => {
       if ( !!this.playerProvider.player ) {
         clearInterval( wait_for_player );
         this.playerProvider.player.subscribe( ( player: Player ) => {
-          this.displayName = player.displayName;
-          this.photoURL    = player.photoURL;
+          console.log( player );
+          console.log( player.photoURL );
+          this.displayName = !!player.displayName ? player.displayName : '';
+          this.photoURL = !!player.photoURL ? player.photoURL : '';
           this.player = player;
+          loading.dismiss();
         } );
       }
     }, 100);
