@@ -37,12 +37,23 @@
     <ion-icon name="add"></ion-icon>&nbsp;コメントを投稿
   </button>
 
-  <ion-card *ngFor="let comment of comments">
+  <ion-card *ngFor="let comment of comments; let index = index">
     <ion-card-content>
+      <button  float-right ion-button clear (click)="openActionSheet( index )"
+               *ngIf="( playerProvider?.player | async )?.uid === comment?.uid">
+        <ion-icon name="settings" style="top: 0; position: absolute; right: 0;"></ion-icon>
+      </button>
       <ion-card-title>
         {{ comment.title }}
       </ion-card-title>
       {{ comment.comment }}
     </ion-card-content>
+    <ion-row>
+      <ion-col>
+        <button ion-button icon-start clear small>
+          {{ comment?.player?.displayName }}
+        </button>
+      </ion-col>
+    </ion-row>
   </ion-card>
 </ion-content>

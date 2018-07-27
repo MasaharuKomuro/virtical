@@ -36,7 +36,18 @@
       {{ comment.length }} / {{ max_comment_length }}
     </p>
   </ion-list>
-  <button ion-button full (click)="postMessage()"
-          [disabled]="!title || !comment || comment.length > this.max_comment_length"
-  >投稿</button>
+
+  <ng-container [ngSwitch]="action">
+    <ng-container *ngSwitchCase="'create'">
+      <button ion-button full (click)="postMessage()"
+              [disabled]="!title || !comment || comment.length > this.max_comment_length"
+      >投稿</button>
+    </ng-container>
+    <ng-container *ngSwitchCase="'edit'">
+      <button ion-button full (click)="editMessage()"
+              [disabled]="!title || !comment || comment.length > this.max_comment_length"
+      >更新</button>
+    </ng-container>
+  </ng-container>
+
 </ion-content>

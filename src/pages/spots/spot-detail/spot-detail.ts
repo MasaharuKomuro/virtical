@@ -1,10 +1,22 @@
 import { Component } from '@angular/core';
-import { AlertController, IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
+import {
+  ActionSheetController,
+  AlertController,
+  IonicPage,
+  LoadingController,
+  ModalController,
+  NavController,
+  NavParams
+} from 'ionic-angular';
 import { PokerSpot } from '../../../model/pokerSpot';
 import { AngularFirestore, Query } from 'angularfire2/firestore';
-import { CollectionReference } from 'angularfire2/firestore/interfaces';
+import { CollectionReference, DocumentChangeAction } from 'angularfire2/firestore/interfaces';
 import { Loading } from 'ionic-angular/components/loading/loading';
 import { Comment } from '../../../model/Comment';
+import { Player } from '../../../model/Player';
+import { PlayerProvider } from '../../../providers/player/player';
+import { AngularFireAuth } from 'angularfire2/auth';
+import { User } from 'firebase';
 
 /**
  * Generated class for the SpotDetailPage page.
@@ -35,7 +47,10 @@ export class SpotDetailPage {
     private store: AngularFirestore,
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
-    public modalCtrl: ModalController
+    public modalCtrl: ModalController,
+    private actionSheetCtrl: ActionSheetController,
+    public playerProvider: PlayerProvider,
+    private auth: AngularFireAuth
     ) {
   }
 
@@ -96,15 +111,128 @@ export class SpotDetailPage {
         .orderBy( 'created_at', 'desc' );
       console.log( ref );
       return query;
-    } ).valueChanges().subscribe( ( comments: Comment[] ) => {
+    } ).snapshotChanges().subscribe( ( dcActions: DocumentChangeAction<Comment>[] ) => {
       console.log( 'コメントが更新されました' );
-      this.comments = comments;
+
+      this.comments = [];
+      dcActions.map( dcAction => {
+        const comment: Comment = new Comment( dcAction.payload.doc.data() );
+        comment.comment_id = dcAction.payload.doc.id;
+        this.comments.push( comment );
+      });
 
       // ユーザ情報を取得する
       if ( !!this.loadingCtrl ) {
+        // 全てのユーザ情報を取得して、コメントに join する
+        this.store.collection( 'players' ).valueChanges().subscribe( ( players: Player[] ) => {
+          this.comments.forEach( ( comment: Comment) => {
+            comment.player = players.find( ( player: Player ) => {
+              return player.uid === comment.uid;
+            });
+          });
+        });
+        console.log( this.comments );
         loader.dismiss();
       }
     });
+  };
+
+  // コメントを編集するアクションシートを表示する
+  public openActionSheet = ( index: number ) => {
+    const actionSheet = this.actionSheetCtrl.create({
+      title: 'のコメントの変更',
+      buttons: [
+        {
+          text: '削除',
+          role: 'destructive',
+          icon: 'trash',
+          handler: this.deleteConfirm( this.comments[ index ] )
+        },{
+          text: '編集',
+          icon: 'refresh',
+          handler: this.editComment( this.comments[ index ] )
+        },{
+          text: '戻る',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+    actionSheet.present();
+  };
+
+  // コメントを編集する
+  private editComment = ( comment: Comment ) => {
+    return () => {
+      const modal = this.modalCtrl.create( 'PostCommentModalPage', {
+        spot_id: this.spot_id, action: 'edit', comment: comment } );
+      modal.present();
+    };
+  };
+
+  // 本当に消していいか確認する
+  private deleteConfirm = ( comment: Comment ) => {
+    return () => {
+      const alert = this.alertCtrl.create({
+        title: '本当に削除してよろしいですか？',
+        message: 'この操作は戻せません。',
+        buttons: [
+          {
+            text: '戻る',
+            role: 'cancel',
+            handler: () => {
+              console.log('Cancel clicked');
+            }
+          },
+          {
+            text: '消す',
+            handler: this.deleteComment( comment )
+          }
+        ]
+      });
+      alert.present();
+    }
+  };
+
+  // コメントを削除する
+  private deleteComment = ( comment: Comment ) => {
+    return () => {
+      const loading = this.loadingCtrl.create({ content: '削除中 ...' });
+      loading.present();
+
+      // 認証状態を確認する
+      this.auth.authState.subscribe( ( user: User ) => {
+        if ( !user ) {
+          const alert = this.alertCtrl.create({
+            title:    '認証エラー',
+            subTitle: 'ログイン情報が確認できませんでした。再度ログインしてください。',
+            buttons:  [ 'OK' ]
+          });
+          alert.present();
+          loading.dismiss();
+        }
+
+        // 削除する
+        this.store.collection( 'spot_comments', ( ref ) => {
+          console.log( '消す対象 ');
+          console.log( comment.comment_id );
+          ref.doc( this.spot_id ).collection( 'comments' ).doc( comment.comment_id ).delete()
+            .then( () => {
+              console.log( '削除成功' );
+              loading.dismiss();
+          }).catch( error => {
+            const alert = this.alertCtrl.create({
+              title:    '削除処理に失敗しました。',
+              buttons:  [ 'OK' ]
+            });
+            alert.present();
+          });
+          return ref;
+        })
+      });
+    };
   };
 
 }
