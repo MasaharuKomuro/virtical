@@ -49,10 +49,11 @@
       {{ comment.comment }}
     </ion-card-content>
     <ion-row>
-      <ion-col>
-        <button ion-button icon-start clear small>
+      <ion-col style="color: #666; font-size: 1.2rem;">
+        <span>
           {{ comment?.player?.displayName }}
-        </button>
+        </span><br>
+        <span>{{ comment.created_at | unixDate: 'YYYY年MM月DD日 H時mm分' }}</span>
       </ion-col>
     </ion-row>
   </ion-card>

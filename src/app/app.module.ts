@@ -16,6 +16,7 @@ import { AgmCoreModule } from '@agm/core';
 import { MapProvider } from '../providers/map/map';
 import { AgmDirectionModule } from 'agm-direction';
 import { PlayerProvider } from '../providers/player/player';
+import { PipesModule } from '../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { PlayerProvider } from '../providers/player/player';
     BrowserModule,
     LoginPageModule,
     ControlPageModule,
+    PipesModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot(),
     AngularFireModule.initializeApp(firebaseConfig,{}),
