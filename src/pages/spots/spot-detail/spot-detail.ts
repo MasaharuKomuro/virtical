@@ -19,7 +19,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { User } from 'firebase';
 
 /**
- * Generated class for the SpotDetailPage page.
+ * Genemy_rated class for the SpotDetailPage page.
  *
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
@@ -40,6 +40,10 @@ export class SpotDetailPage {
   public spot_id: string; // poker_spot.id
 
   public comments: Comment[] = [];
+
+  public rate_average: number = 3; // 0は評価なし
+
+  public my_rate: number = 3;
 
   constructor(
     public navCtrl: NavController,
@@ -83,6 +87,10 @@ export class SpotDetailPage {
       }
       this.spot = new PokerSpot( spots[0].payload.doc.data() );
       this.spot_id = spots[0].payload.doc.id;
+      this.my_rate = this.spot.rate[ this.playerProvider.user.uid ] || 3;
+
+      // 平均レートをセットする
+      this.setRateAverage();
 
       // コメントを取得する
       this.getComments( loader );
@@ -96,6 +104,21 @@ export class SpotDetailPage {
       alert.present();
       return;
     });
+  };
+
+  // 返金評価をセットする
+  public setRateAverage = () => {
+    if ( !!this.spot.rate ) {
+      let sum = 0;
+      for ( const key in this.spot.rate ) {
+        if ( this.spot.rate.hasOwnProperty( key ) ) {
+          sum += this.spot.rate[key];
+        }
+      }
+      this.rate_average = sum / Object.keys( this.spot.rate ).length;
+    } else {
+      this.rate_average = 0;
+    }
   };
 
   // コメント投稿画面を開きます
@@ -236,7 +259,7 @@ export class SpotDetailPage {
   };
 
   public goodOrBad = ( index: number, action: 'good' | 'bad' ) => {
-    const loading = this.loadingCtrl.create({ content: '削除中 ...' });
+    const loading = this.loadingCtrl.create({ content: '更新中 ...' });
     loading.present();
 
     // とりあえず認証状態を確認する
@@ -272,7 +295,7 @@ export class SpotDetailPage {
       this.store.collection( 'spot_comments', ( ref ) => {
         ref.doc( this.spot_id ).collection( 'comments' ).doc( comment.comment_id ).update(
           action, comment[action] ).then( () => {
-          console.log( '成功成功' );
+          console.log( '成功' );
           loading.dismiss();
         }).catch( error => {
           const alert = this.alertCtrl.create({
@@ -292,5 +315,39 @@ export class SpotDetailPage {
       return 0;
     }
     return Object.keys( this.comments[index][action] ).length;
+  };
+
+  // my_rate を登録する
+  public submitRate = () => {
+    const loading = this.loadingCtrl.create({ content: '更新中 ...' });
+    loading.present();
+
+    // とりあえず認証状態を確認する
+    this.auth.authState.subscribe( ( user: User ) => {
+      if ( !user ) {
+        const alert = this.alertCtrl.create( {
+          title:    '認証エラー',
+          subTitle: 'ログイン情報が確認できませんでした。再度ログインしてください。',
+          buttons:  [ 'OK' ]
+        } );
+        alert.present();
+        loading.dismiss();
+      }
+
+      this.store.collection( 'poker_spot', ( ref ) => {
+        this.spot.rate[ user.uid ] = this.my_rate;
+        ref.doc( this.spot_id ).update( 'rate', this.spot.rate ).then( () => {
+          console.log( '成功' );
+          loading.dismiss();
+        }).catch( error => {
+          const alert = this.alertCtrl.create({
+            title:    '処理に失敗しました。',
+            buttons:  [ 'OK' ]
+          });
+          alert.present();
+        });
+        return ref;
+      } )
+    });
   };
 }

@@ -2,10 +2,6 @@ ion-range.rate-starts {
   font-family: "Ionicons"
 }
 
-ion-title:before {
-  content: '\f4b3';
-}
-
 ion-range.rate-starts .range-tick {
   background: transparent;
 }

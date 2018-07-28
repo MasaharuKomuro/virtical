@@ -10,6 +10,7 @@ export class PokerSpot {
   public geo?: GeocoderResult; // google map api の geo cording 結果を格納
   public latitude: number;
   public longitude: number;
+  public rate: {} = {};
 
   constructor ( spot: Partial<PokerSpot>) {
     Object.assign( this, spot );

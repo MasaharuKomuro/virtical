@@ -3,8 +3,6 @@
   <ion-navbar>
     <ion-title>{{ spot?.name }}</ion-title>
   </ion-navbar>
-  <ion-icon name="star"></ion-icon>
-  <ion-icon name="star-outline"></ion-icon>
 </ion-header>
 
 
@@ -17,6 +15,13 @@
       <p>{{ spot.address1 }}</p>
       <p>{{ spot.address2 }}</p>
       <p>{{ spot.tel }}</p>
+      <p style="color: #eed755; font-family: 'Ionicons';">
+        <a *ngIf="rate_average > 0">&#xf4b3;</a>
+        <a *ngIf="rate_average > 1">&#xf4b3;</a>
+        <a *ngIf="rate_average > 2">&#xf4b3;</a>
+        <a *ngIf="rate_average > 3">&#xf4b3;</a>
+        <a *ngIf="rate_average > 4">&#xf4b3;</a>
+      </p>
     </ion-card-content>
     <ion-item>
       <ion-icon name='musical-notes' item-start style="color: #d03e84"></ion-icon>
@@ -34,9 +39,9 @@
   <div style="width: 100%;">
     <div style="width: 50%; height: 58px; display: flex; justify-content: center; align-items: center;" float-left>このスポットの評価を<br>教えてください</div>
     <div style="width: 50%;" float-right>
-      <ion-range min="1" max="5" step="1" color="secondary" snaps="true" class="rate-starts" margin-right>
+      <ion-range min="1" max="5" step="1" color="secondary" snaps="true" class="rate-starts" margin-right [(ngModel)]="my_rate">
       </ion-range>
-      <button float-right ion-button small margin-right>送信</button>
+      <button float-right ion-button small margin-right (click)="submitRate()">送信</button>
     </div>
   </div>
 
