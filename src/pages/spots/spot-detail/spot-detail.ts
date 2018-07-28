@@ -235,4 +235,62 @@ export class SpotDetailPage {
     };
   };
 
+  public goodOrBad = ( index: number, action: 'good' | 'bad' ) => {
+    const loading = this.loadingCtrl.create({ content: '削除中 ...' });
+    loading.present();
+
+    // とりあえず認証状態を確認する
+    this.auth.authState.subscribe( ( user: User ) => {
+      if ( !user ) {
+        const alert = this.alertCtrl.create( {
+          title:    '認証エラー',
+          subTitle: 'ログイン情報が確認できませんでした。再度ログインしてください。',
+          buttons:  [ 'OK' ]
+        } );
+        alert.present();
+        loading.dismiss();
+      }
+
+      const comment: Comment = this.comments[ index ];
+
+      console.log( 'from' );
+      console.log( comment[action] );
+
+      // good or bad のアクションを反映する
+
+      if ( !!comment[ action ] ) {
+        if ( !!comment[ action ][ user.uid ] ) {
+          delete comment[ action ][ user.uid ];
+        } else {
+          comment[ action ][user.uid] = true;
+        }
+      } else {
+        comment[ action ] = { [user.uid]: true };
+      }
+
+      // アクションの保存を反映する
+      this.store.collection( 'spot_comments', ( ref ) => {
+        ref.doc( this.spot_id ).collection( 'comments' ).doc( comment.comment_id ).update(
+          action, comment[action] ).then( () => {
+          console.log( '成功成功' );
+          loading.dismiss();
+        }).catch( error => {
+          const alert = this.alertCtrl.create({
+            title:    'いいね処理に失敗しました。',
+            buttons:  [ 'OK' ]
+          });
+          alert.present();
+        });
+        return ref;
+      } );
+    });
+  };
+
+  // いいね もしくは バッド の数を返す
+  public getGoodsOrBadsLength = ( index: number, action: string ) => {
+    if ( !this.comments[index][action] ) {
+      return 0;
+    }
+    return Object.keys( this.comments[index][action] ).length;
+  };
 }

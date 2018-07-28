@@ -55,6 +55,16 @@
         </span><br>
         <span>{{ comment.created_at | unixDate: 'YYYY年MM月DD日 H時mm分' }}</span>
       </ion-col>
+      <ion-col>
+        <ion-row style="justify-content: flex-end;">
+          <button  float-right ion-button clear (click)="goodOrBad( index, 'good' )">
+            <img class="good" src="assets/icon/good.svg">{{ getGoodsOrBadsLength( index, 'good') }}
+          </button>
+          <button  float-right ion-button clear (click)="goodOrBad( index, 'bad' )">
+            <img class="bad" src="assets/icon/good.svg">{{ getGoodsOrBadsLength( index, 'bad') }}
+          </button>
+        </ion-row>
+      </ion-col>
     </ion-row>
   </ion-card>
 </ion-content>

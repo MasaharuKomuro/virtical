@@ -10,6 +10,10 @@ export class Comment {
 
   created_at: number = moment().unix();
 
+  goods?: {};
+
+  bad?: {};
+
   // only local variables
   player?: Player;
 

@@ -1,3 +1,16 @@
 page-spot-detail {
 
 }
+
+img {
+  &.good, &.bad {
+    height: 1.6rem;
+    width: auto;
+    object-fit: contain;
+    margin-right: 10px;
+  }
+
+  &.bad {
+    transform: scale(-1, -1);
+  }
+}
