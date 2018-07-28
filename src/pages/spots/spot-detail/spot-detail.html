@@ -3,7 +3,8 @@
   <ion-navbar>
     <ion-title>{{ spot?.name }}</ion-title>
   </ion-navbar>
-
+  <ion-icon name="star"></ion-icon>
+  <ion-icon name="star-outline"></ion-icon>
 </ion-header>
 
 
@@ -17,7 +18,6 @@
       <p>{{ spot.address2 }}</p>
       <p>{{ spot.tel }}</p>
     </ion-card-content>
-
     <ion-item>
       <ion-icon name='musical-notes' item-start style="color: #d03e84"></ion-icon>
       Albums
@@ -31,7 +31,16 @@
     </ion-item>
   </ion-card>
 
-  <p style="font-size: 1.3em; line-height: 2.2;" float-left margin-left>
+  <div style="width: 100%;">
+    <div style="width: 50%; height: 58px; display: flex; justify-content: center; align-items: center;" float-left>このスポットの評価を<br>教えてください</div>
+    <div style="width: 50%;" float-right>
+      <ion-range min="1" max="5" step="1" color="secondary" snaps="true" class="rate-starts" margin-right>
+      </ion-range>
+      <button float-right ion-button small margin-right>送信</button>
+    </div>
+  </div>
+
+  <p style="font-size: 1.3em; line-height: 2.2; clear: both;" float-left margin-left>
     コメント ( {{ comments.length }}件 )</p>
   <button ion-button float-right margin-top margin-right (click)="openPostCommentModal()">
     <ion-icon name="add"></ion-icon>&nbsp;コメントを投稿

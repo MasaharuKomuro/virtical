@@ -1,0 +1,33 @@
+ion-range.rate-starts {
+  font-family: "Ionicons"
+}
+
+ion-title:before {
+  content: '\f4b3';
+}
+
+ion-range.rate-starts .range-tick {
+  background: transparent;
+}
+
+ion-range.rate-starts .range-tick:before {
+  content: '\f4b2';
+  color: #eed755;
+  font-size: 4rem;
+  position: absolute;
+  left: -17px;
+  top: -21px;
+}
+
+ion-range.rate-starts .range-tick.range-tick-active:before {
+  content: '\f4b3';
+}
+
+ion-range .range-knob-handle {
+  display: none;
+}
+
+
+ion-range.rate-starts .range-bar {
+  background: transparent;
+}
