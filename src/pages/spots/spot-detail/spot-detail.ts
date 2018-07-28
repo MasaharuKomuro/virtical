@@ -4,8 +4,7 @@ import {
   AlertController,
   IonicPage,
   LoadingController,
-  ModalController,
-  NavController,
+  ModalController, NavController,
   NavParams
 } from 'ionic-angular';
 import { PokerSpot } from '../../../model/pokerSpot';
@@ -26,7 +25,7 @@ import { User } from 'firebase';
  */
 
 @IonicPage({
-  segment: 'page-spot-detail/:name',
+  segment: 'detail/:name',
   defaultHistory: [ 'SpotsPage' ]
 })
 @Component({
@@ -77,7 +76,7 @@ export class SpotDetailPage {
 
       if ( spots.length === 0 ) {
         console.warn( 'スポットを検索できません。' );
-        loader.dismiss();
+        loader.dismiss().catch(() => {});
         const alert = this.alertCtrl.create({
           title: 'スポットを検索できませんでした。',
           buttons: ['OK']
@@ -96,7 +95,7 @@ export class SpotDetailPage {
       this.getComments( loader );
     }, error => {
       console.warn( 'スポットを検索できません。' );
-      loader.dismiss();
+      loader.dismiss().catch(() => {});
       const alert = this.alertCtrl.create({
         title: 'スポットを検索できませんでした。',
         buttons: ['OK']
@@ -155,7 +154,7 @@ export class SpotDetailPage {
           });
         });
         console.log( this.comments );
-        loader.dismiss();
+        loader.dismiss().catch(() => {});
       }
     });
   };
@@ -234,7 +233,7 @@ export class SpotDetailPage {
             buttons:  [ 'OK' ]
           });
           alert.present();
-          loading.dismiss();
+          loading.dismiss().catch(() => {});
         }
 
         // 削除する
@@ -244,7 +243,7 @@ export class SpotDetailPage {
           ref.doc( this.spot_id ).collection( 'comments' ).doc( comment.comment_id ).delete()
             .then( () => {
               console.log( '削除成功' );
-              loading.dismiss();
+              loading.dismiss().catch(() => {});
           }).catch( error => {
             const alert = this.alertCtrl.create({
               title:    '削除処理に失敗しました。',
@@ -271,7 +270,7 @@ export class SpotDetailPage {
           buttons:  [ 'OK' ]
         } );
         alert.present();
-        loading.dismiss();
+        loading.dismiss().catch(() => {});
       }
 
       const comment: Comment = this.comments[ index ];
@@ -296,7 +295,7 @@ export class SpotDetailPage {
         ref.doc( this.spot_id ).collection( 'comments' ).doc( comment.comment_id ).update(
           action, comment[action] ).then( () => {
           console.log( '成功' );
-          loading.dismiss();
+          loading.dismiss().catch(() => {});
         }).catch( error => {
           const alert = this.alertCtrl.create({
             title:    'いいね処理に失敗しました。',
@@ -331,14 +330,14 @@ export class SpotDetailPage {
           buttons:  [ 'OK' ]
         } );
         alert.present();
-        loading.dismiss();
+        loading.dismiss().catch(() => {});
       }
 
       this.store.collection( 'poker_spot', ( ref ) => {
         this.spot.rate[ user.uid ] = this.my_rate;
         ref.doc( this.spot_id ).update( 'rate', this.spot.rate ).then( () => {
           console.log( '成功' );
-          loading.dismiss();
+          loading.dismiss().catch(() => {});
         }).catch( error => {
           const alert = this.alertCtrl.create({
             title:    '処理に失敗しました。',

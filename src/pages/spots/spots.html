@@ -5,8 +5,6 @@
 </ion-header>
 
 <ion-content>
-  <!--<button type="hidden" ion-button (click)="test()">test</button>-->
-  <!--<div [innerHtml]="debug_message"></div>-->
   <div class="map-container">
     <agm-map
             *ngIf="!!my_position"
@@ -14,6 +12,7 @@
             [longitude]="center_position.lng()"
             [zoom]="map_config.zoom"
             [streetViewControl]="false"
+            [usePanning]="true"
     >
       <agm-marker [latitude]="my_position.lat()" [longitude]="my_position.lng()"
                   [title]="'title'" [label]="'現在地'"

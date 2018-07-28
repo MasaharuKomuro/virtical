@@ -9,7 +9,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 
 @IonicPage()
 @Component( {
-  selector:    'page-spots',
+  selector:    'spots',
   templateUrl: 'spots.html'
 } )
 export class SpotsPage {
@@ -71,6 +71,7 @@ export class SpotsPage {
 
   // 距離の近い順に並び替える
   private sortWithDistance = () => {
+    console.log( this._spots );
     if ( !this.my_position || this._spots.length === 0 ) {
       return;
     }
@@ -101,11 +102,14 @@ export class SpotsPage {
   };
 
   private getMyLocation = () => {
+    console.log( '>>> getMyLocation' );
     this.geolocation.getCurrentPosition().then( ( position: Geoposition ) => {
       console.log( position );
       this.my_position     = new google.maps.LatLng( position.coords.latitude, position.coords.longitude );
       this.center_position = this.my_position;
-      setTimeout( _ => this.spots.emit( this._spots ) );
+      setTimeout( _ => {
+        this.spots.emit( this._spots )
+      } );
       this.sortWithDistance();
     } ).catch( ( error ) => {
       console.warn( 'Error getting location', error );
@@ -113,19 +117,20 @@ export class SpotsPage {
   };
 
   private getSpots = () => {
+    console.log( '>>> getSpot' );
     const loader = this.loadingCtrl.create( {
       content: '読込中...'
     } );
     loader.present();
 
     this.store.collection( 'poker_spot' ).valueChanges().subscribe( ( spots: PokerSpot[] ) => {
-      console.log( spots );
+      this._spots = [];
       spots.map( ( spot: PokerSpot ) => {
         this._spots.push( new PokerSpot( spot ) );
       } );
       this.storage.set( 'spots', JSON.stringify( this._spots ) );
       this.spots.emit( this._spots );
-      loader.dismiss();
+      loader.dismiss().catch( _ => {});
       this.sortWithDistance();
     });
   };
@@ -141,15 +146,11 @@ export class SpotsPage {
   }
 
   test = () => {
-    console.log( this.spots );
-    console.log( this._spots );
     this.spots.emit( this._spots);
   };
 
   // 経路を表示する
   showDirection = ( spot: PokerSpot ) => {
-    console.log( 'show direction' );
-    console.log( spot );
     this.show_direction = false;
     // 前の経路を削除するために、setTimeout に逃す
     setTimeout( _ => {
@@ -177,6 +178,8 @@ export class SpotsPage {
     if ( !!event ) {
       event.stopPropagation();
     }
+    // クスロールを元に戻す
+    document.querySelector( '.scroll-content' ).scrollTop = 0;
     this.center_position = new google.maps.LatLng( spot.latitude, spot.longitude );
   }
 }
