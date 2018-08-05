@@ -17,6 +17,9 @@ import { MapProvider } from '../providers/map/map';
 import { AgmDirectionModule } from 'agm-direction';
 import { PlayerProvider } from '../providers/player/player';
 import { PipesModule } from '../pipes/pipes.module';
+import { File } from '@ionic-native/file';
+import { Camera } from '@ionic-native/camera';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -35,7 +38,8 @@ import { PipesModule } from '../pipes/pipes.module';
     AgmCoreModule.forRoot({
       apiKey: dev_api_key
     }),
-    AgmDirectionModule
+    AgmDirectionModule,
+    HttpClientModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -47,6 +51,8 @@ import { PipesModule } from '../pipes/pipes.module';
     Geolocation,
     MapProvider,
     PlayerProvider,
+    File,
+    Camera,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
   ]
 })

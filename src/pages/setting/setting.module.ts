@@ -9,5 +9,7 @@ import { SettingPage } from './setting';
   imports: [
     IonicPageModule.forChild(SettingPage),
   ],
+  providers: [
+  ]
 })
 export class SettingPageModule {}

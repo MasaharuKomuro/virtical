@@ -297,10 +297,12 @@ export class SpotDetailPage {
           console.log( '成功' );
           loading.dismiss().catch(() => {});
         }).catch( error => {
+          console.warn( error );
           const alert = this.alertCtrl.create({
             title:    'いいね処理に失敗しました。',
             buttons:  [ 'OK' ]
           });
+          loading.dismiss();
           alert.present();
         });
         return ref;

@@ -64,6 +64,7 @@ export class PostCommentModalPage {
 
   // コメントを投稿する
   public postMessage = () => {
+    console.log( 'コメントの投稿を開始します。 ');
     const loading = this.loadingCtrl.create( { content: '読込中...' } );
     loading.present();
 
@@ -85,20 +86,27 @@ export class PostCommentModalPage {
       }
 
       // コメントを投稿する
+
       const comment = new Comment( {
         title: this.title,
         comment: this.comment,
         uid: user.uid
       } );
 
+      console.log( '投稿処理実行' );
       this.store.collection( 'spot_comments', ( ref ) => {
+        console.log(1);
         const spot_id = this.navParams.get( 'spot_id' );
+        console.log(2);
         ref.doc( spot_id ).collection( 'comments' ).add(
           Object.assign( {}, comment )
         ).then( _ => {
+          console.log(3);
           loading.dismiss();
           this.viewCtrl.dismiss();
-        }).catch( _ => {
+          console.log( 'コメント投稿完了' );
+        }).catch( error => {
+          console.warn( error );
           loading.dismiss();
           this.alertCtrl.create( {
             title: '投稿に失敗しました。',

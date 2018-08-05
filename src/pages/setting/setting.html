@@ -28,4 +28,19 @@
     </ion-item>
   </ion-list>
   <button ion-button full (click)="updateUserProfile()">更新</button>
+
+  <ion-item>
+    <button ion-button color="secondary" (click)="getImage()">画像を選択</button>
+  </ion-item>
+  <ion-item>
+    <h4>Image Preview</h4>
+    <img [src]="imageURI">
+    <img src="{{ imageFileName }}" *ngIf="imageFileName" alt="Ionic File" width="300" />
+    <div>
+      {{imageURI}}
+    </div>
+  </ion-item>
+  <ion-item>
+    <button ion-button (click)="uploadFile()">Upload</button>
+  </ion-item>
 </ion-content>

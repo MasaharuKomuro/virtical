@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
-import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { AlertController, IonicPage, LoadingController, NavController, NavParams, Platform } from 'ionic-angular';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { CollectionReference } from 'angularfire2/firestore/interfaces';
 import { PlayerProvider } from '../../providers/player/player';
 import { Player } from '../../model/Player';
+import { Camera, CameraOptions } from '@ionic-native/camera';
+import { HttpClient } from '@angular/common/http';
+import { DomSanitizer } from '@angular/platform-browser';
 
 /**
  * Generated class for the SettingPage page.
@@ -26,14 +29,25 @@ export class SettingPage {
 
   public player: Player;
 
+  public imageURI: any;
+
+  public imageFileName: any;
+
+  public is_cordova_env: boolean;
+
   constructor(
     public navCtrl: NavController, public navParams: NavParams,
     public auth: AngularFireAuth,
     private loadingCtrl: LoadingController,
     private store: AngularFirestore,
     private alertCtrl: AlertController,
-    public playerProvider: PlayerProvider
-    ) {
+    public playerProvider: PlayerProvider,
+    private camera: Camera,
+    private httpClient: HttpClient,
+    private domSanitizer: DomSanitizer,
+    private platform: Platform
+  ) {
+    this.is_cordova_env = this.platform.is('cordova' );
     const loading = this.loadingCtrl.create( { content: '読込中 ...'} );
     loading.present();
     const wait_for_player = setInterval( () => {
@@ -79,13 +93,45 @@ export class SettingPage {
         loading.dismiss();
       }).catch( error => {
         loading.dismiss();
-        this.alertCtrl.create( {
+        const alert = this.alertCtrl.create( {
           title: '更新に失敗しました。',
           buttons: ['OK']
-        } )
+        } );
+        alert.present();
       });
       return ref;
     } );
   };
+
+  public getImage() {
+    console.log( 'image' );
+    const options: CameraOptions = {
+      quality:         100,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      sourceType:      this.camera.PictureSourceType.PHOTOLIBRARY,
+      allowEdit:       true
+    };
+
+    const getPicture = this.camera.getPicture( options );
+
+    // なぜかファイル入力モーダルが立ち上がらないので、強制的に発火
+    if ( !!document.querySelector( '.cordova-camera-select' ) ) {
+      (document.querySelector( '.cordova-camera-select' ) as HTMLElement).click();
+    }
+
+    getPicture.then( ( imageData ) => {
+      this.imageURI = this.domSanitizer.bypassSecurityTrustUrl(
+        'data:image/jpeg;charset=utf-8;base64, ' + imageData
+      );
+      console.log( this.httpClient );
+    }, ( err ) => {
+      console.log( err );
+      const alert = this.alertCtrl.create( {
+        title:   '写真を選択できません。',
+        buttons: [ 'OK' ]
+      } );
+      alert.present();
+    } );
+  }
 
 }
