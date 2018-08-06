@@ -14,8 +14,10 @@ import { CollectionReference } from 'angularfire2/firestore/interfaces';
 import { PlayerProvider } from '../../providers/player/player';
 import { Player } from '../../model/Player';
 import { Camera, CameraOptions } from '@ionic-native/camera';
-import { HttpClient } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
+import { AngularFireStorage } from 'angularfire2/storage';
+import { Observable } from 'rxjs/Rx';
+import { SafeUrl } from '@angular/platform-browser/src/security/dom_sanitization_service';
 
 /**
  * Generated class for the SettingPage page.
@@ -33,13 +35,11 @@ export class SettingPage {
 
   public displayName: string;
 
-  public photoURL: string;
-
   public player: Player;
 
-  public imageURI: any;
+  public image_uri: any;
 
-  public imageFileName: any;
+  public image_uri_for_preview: SafeUrl;
 
   public is_cordova_env: boolean;
 
@@ -51,10 +51,10 @@ export class SettingPage {
     private alertCtrl: AlertController,
     public playerProvider: PlayerProvider,
     private camera: Camera,
-    private httpClient: HttpClient,
     private domSanitizer: DomSanitizer,
     private platform: Platform,
-    private actionSheetCtrl: ActionSheetController
+    private actionSheetCtrl: ActionSheetController,
+    private storage: AngularFireStorage
   ) {
     this.is_cordova_env = this.platform.is('cordova' );
     const loading = this.loadingCtrl.create( { content: '読込中 ...'} );
@@ -66,7 +66,6 @@ export class SettingPage {
           console.log( player );
           console.log( player.photoURL );
           this.displayName = !!player.displayName ? player.displayName : '';
-          this.photoURL = !!player.photoURL ? player.photoURL : '';
           this.player = player;
           loading.dismiss();
         } );
@@ -88,9 +87,6 @@ export class SettingPage {
     if ( !!this.displayName ) {
       set_data['displayName'] = this.displayName;
     }
-    if ( !!this.photoURL ) {
-      set_data['photoURL'] = this.photoURL;
-    }
     if ( Object.keys( set_data ).length === 0 ) {
       // 入力されていません
       loading.dismiss();
@@ -100,6 +96,7 @@ export class SettingPage {
     this.store.collection( 'players', ( ref: CollectionReference ) => {
       ref.doc( this.player.uid ).set( set_data, { merge: true } ).then( () => {
         loading.dismiss();
+        this.uploadImage();
       }).catch( error => {
         loading.dismiss();
         const alert = this.alertCtrl.create( {
@@ -112,7 +109,9 @@ export class SettingPage {
     } );
   };
 
+  // 入力ソースを選択する
   public imageSourceSelection = () => {
+
     // アクションシートを表示して、ソースを選択させる
     const actionSheet = this.actionSheetCtrl.create({
       title: '画像を選択',
@@ -135,28 +134,30 @@ export class SettingPage {
     actionSheet.present();
   };
 
+  // 画像をsource_typeの方法で取得する
   public getImage( source_type: number ) {
     return () => {
-      console.log( 'image e' );
       const options: CameraOptions = {
         quality:         100,
         destinationType: this.camera.DestinationType.FILE_URI,
         sourceType:      source_type,
-        allowEdit:       true
+        allowEdit:       true,
+        mediaType: this.camera.MediaType.PICTURE,
+        encodingType: this.camera.EncodingType.JPEG
       };
 
       const getPicture = this.camera.getPicture( options );
 
       // なぜかファイル入力モーダルが立ち上がらないので、強制的に発火
       if ( !!document.querySelector( '.cordova-camera-select' ) ) {
-        (document.querySelector( '.cordova-camera-select' ) as HTMLElement).click();
+        ( document.querySelector( '.cordova-camera-select' ) as HTMLElement ).click();
       }
 
       getPicture.then( ( imageData ) => {
-        this.imageURI = this.domSanitizer.bypassSecurityTrustUrl(
-          'data:image/jpeg;charset=utf-8;base64, ' + imageData
-        );
-        console.log( this.httpClient );
+        // base64にエンコードされた結果を受け取る
+        this.image_uri = 'data:image/jpeg;charset=utf-8;base64, ' + imageData;
+        // プレビュー用の変換もしておく
+        this.image_uri_for_preview = this.domSanitizer.bypassSecurityTrustUrl( this.image_uri );
       }, ( err ) => {
         console.log( err );
         const alert = this.alertCtrl.create( {
@@ -166,6 +167,29 @@ export class SettingPage {
         alert.present();
       } );
     }
+  }
+
+  // プロフィール画像をアップロードする
+  public uploadImage() {
+    if ( !this.image_uri ) {
+      return Observable.of( '' );
+    }
+    let loader = this.loadingCtrl.create({
+      content: "アップロード中 ..."
+    });
+    loader.present();
+
+    return Observable.fromPromise(
+      this.storage.ref( 'image/' + this.player.uid ).putString( this.image_uri, 'data_url' )
+      .then( ( snapshot ) => {
+        loader.dismiss();
+        console.log( 'アップロード完了' );
+      }).catch( ( error ) => {
+        loader.dismiss();
+        console.log( error );
+        console.log( 'アップロード失敗' );
+      })
+    );
   }
 
 }

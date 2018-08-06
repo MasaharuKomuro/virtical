@@ -20,6 +20,7 @@ import { PipesModule } from '../pipes/pipes.module';
 import { File } from '@ionic-native/file';
 import { Camera } from '@ionic-native/camera';
 import { HttpClientModule } from '@angular/common/http';
+import { AngularFireStorageModule } from 'angularfire2/storage';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { HttpClientModule } from '@angular/common/http';
       apiKey: dev_api_key
     }),
     AgmDirectionModule,
-    HttpClientModule
+    HttpClientModule,
+    AngularFireStorageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
