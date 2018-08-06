@@ -1,3 +1,21 @@
 page-setting {
 
 }
+
+.cordova-camera-capture {
+  video {
+    width: 100%;
+    height: auto;
+  }
+
+  button {
+    position: absolute;
+    right: 0;
+    bottom: 5px;
+    background: #4889ff;
+    color: white;
+    font-size: 35px;
+    border-radius: 4px;
+    padding: 8px;
+  }
+}

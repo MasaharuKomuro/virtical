@@ -1,5 +1,13 @@
 import { Component } from '@angular/core';
-import { AlertController, IonicPage, LoadingController, NavController, NavParams, Platform } from 'ionic-angular';
+import {
+  ActionSheetController,
+  AlertController,
+  IonicPage,
+  LoadingController,
+  NavController,
+  NavParams,
+  Platform
+} from 'ionic-angular';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { CollectionReference } from 'angularfire2/firestore/interfaces';
@@ -45,7 +53,8 @@ export class SettingPage {
     private camera: Camera,
     private httpClient: HttpClient,
     private domSanitizer: DomSanitizer,
-    private platform: Platform
+    private platform: Platform,
+    private actionSheetCtrl: ActionSheetController
   ) {
     this.is_cordova_env = this.platform.is('cordova' );
     const loading = this.loadingCtrl.create( { content: '読込中 ...'} );
@@ -103,35 +112,60 @@ export class SettingPage {
     } );
   };
 
-  public getImage() {
-    console.log( 'image' );
-    const options: CameraOptions = {
-      quality:         100,
-      destinationType: this.camera.DestinationType.FILE_URI,
-      sourceType:      this.camera.PictureSourceType.PHOTOLIBRARY,
-      allowEdit:       true
-    };
+  public imageSourceSelection = () => {
+    // アクションシートを表示して、ソースを選択させる
+    const actionSheet = this.actionSheetCtrl.create({
+      title: '画像を選択',
+      buttons: [
+        {
+          text: '撮影する',
+          icon: 'camera',
+          handler: this.getImage( this.camera.PictureSourceType.CAMERA )
+        },{
+          text: '保存された画像を選択する',
+          icon: 'folder',
+          handler: this.getImage( this.camera.PictureSourceType.PHOTOLIBRARY )
+        },{
+          text: '戻る',
+          role: 'cancel',
+          handler: () => { console.log('Cancel clicked'); }
+        }
+      ]
+    });
+    actionSheet.present();
+  };
 
-    const getPicture = this.camera.getPicture( options );
+  public getImage( source_type: number ) {
+    return () => {
+      console.log( 'image e' );
+      const options: CameraOptions = {
+        quality:         100,
+        destinationType: this.camera.DestinationType.FILE_URI,
+        sourceType:      source_type,
+        allowEdit:       true
+      };
 
-    // なぜかファイル入力モーダルが立ち上がらないので、強制的に発火
-    if ( !!document.querySelector( '.cordova-camera-select' ) ) {
-      (document.querySelector( '.cordova-camera-select' ) as HTMLElement).click();
-    }
+      const getPicture = this.camera.getPicture( options );
 
-    getPicture.then( ( imageData ) => {
-      this.imageURI = this.domSanitizer.bypassSecurityTrustUrl(
-        'data:image/jpeg;charset=utf-8;base64, ' + imageData
-      );
-      console.log( this.httpClient );
-    }, ( err ) => {
-      console.log( err );
-      const alert = this.alertCtrl.create( {
-        title:   '写真を選択できません。',
-        buttons: [ 'OK' ]
+      // なぜかファイル入力モーダルが立ち上がらないので、強制的に発火
+      if ( !!document.querySelector( '.cordova-camera-select' ) ) {
+        (document.querySelector( '.cordova-camera-select' ) as HTMLElement).click();
+      }
+
+      getPicture.then( ( imageData ) => {
+        this.imageURI = this.domSanitizer.bypassSecurityTrustUrl(
+          'data:image/jpeg;charset=utf-8;base64, ' + imageData
+        );
+        console.log( this.httpClient );
+      }, ( err ) => {
+        console.log( err );
+        const alert = this.alertCtrl.create( {
+          title:   '画像を選択できません。',
+          buttons: [ 'OK' ]
+        } );
+        alert.present();
       } );
-      alert.present();
-    } );
+    }
   }
 
 }
