@@ -18,6 +18,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { AngularFireStorage } from 'angularfire2/storage';
 import { Observable } from 'rxjs/Rx';
 import { SafeUrl } from '@angular/platform-browser/src/security/dom_sanitization_service';
+import { UploadTaskSnapshot } from 'angularfire2/storage/interfaces';
+import { ImageHandle } from '../../providers/util/image-handle';
 
 /**
  * Generated class for the SettingPage page.
@@ -37,8 +39,6 @@ export class SettingPage {
 
   public player: Player;
 
-  public image_uri: any;
-
   public image_uri_for_preview: SafeUrl;
 
   public is_cordova_env: boolean;
@@ -54,19 +54,22 @@ export class SettingPage {
     private domSanitizer: DomSanitizer,
     private platform: Platform,
     private actionSheetCtrl: ActionSheetController,
-    private storage: AngularFireStorage
+    private storage: AngularFireStorage,
+    private imageHandle: ImageHandle
   ) {
     this.is_cordova_env = this.platform.is('cordova' );
     const loading = this.loadingCtrl.create( { content: '読込中 ...'} );
     loading.present();
+    // player 情報がセットされるのを待つ
     const wait_for_player = setInterval( () => {
       if ( !!this.playerProvider.player ) {
         clearInterval( wait_for_player );
         this.playerProvider.player.subscribe( ( player: Player ) => {
           console.log( player );
-          console.log( player.photoURL );
+          console.log( player.thumbnail_path );
           this.displayName = !!player.displayName ? player.displayName : '';
           this.player = player;
+          this.setThumbnailUrl();
           loading.dismiss();
         } );
       }
@@ -77,9 +80,18 @@ export class SettingPage {
     console.log('ionViewDidLoad SettingPage');
   }
 
+  private setThumbnailUrl = () => {
+    if ( !!this.player.thumbnail_path ) {
+      this.imageHandle.getPictureUrl( 'image/' + this.player.uid ).subscribe( ( url ) => {
+        console.log( url );
+        this.image_uri_for_preview = url;
+      });
+    }
+  };
+
   // プロフィールを更新する
   public updateUserProfile = () => {
-    const loading = this.loadingCtrl.create( { content: '読込中...' } );
+    const loading = this.loadingCtrl.create( { content: 'プロフィールを更新中 ...' } );
     loading.present();
 
     // 更新用のデータを作成する
@@ -87,16 +99,20 @@ export class SettingPage {
     if ( !!this.displayName ) {
       set_data['displayName'] = this.displayName;
     }
+    if ( !!this.player.thumbnail_path ) {
+      set_data['thumbnail_path'] = this.player.thumbnail_path;
+    }
     if ( Object.keys( set_data ).length === 0 ) {
       // 入力されていません
       loading.dismiss();
     }
 
     // 更新を実行する
+    console.log(`set data: `);
+    console.log(set_data);
     this.store.collection( 'players', ( ref: CollectionReference ) => {
       ref.doc( this.player.uid ).set( set_data, { merge: true } ).then( () => {
         loading.dismiss();
-        this.uploadImage();
       }).catch( error => {
         loading.dismiss();
         const alert = this.alertCtrl.create( {
@@ -155,9 +171,11 @@ export class SettingPage {
 
       getPicture.then( ( imageData ) => {
         // base64にエンコードされた結果を受け取る
-        this.image_uri = 'data:image/jpeg;charset=utf-8;base64, ' + imageData;
+        const image_uri = 'data:image/jpeg;charset=utf-8;base64, ' + imageData;
         // プレビュー用の変換もしておく
-        this.image_uri_for_preview = this.domSanitizer.bypassSecurityTrustUrl( this.image_uri );
+        this.image_uri_for_preview = this.domSanitizer.bypassSecurityTrustUrl( image_uri );
+        // 画像をストレージにアップロードする
+        this.uploadImage( image_uri );
       }, ( err ) => {
         console.log( err );
         const alert = this.alertCtrl.create( {
@@ -170,26 +188,26 @@ export class SettingPage {
   }
 
   // プロフィール画像をアップロードする
-  public uploadImage() {
-    if ( !this.image_uri ) {
-      return Observable.of( '' );
-    }
+  public uploadImage( image_uri: string ) {
     let loader = this.loadingCtrl.create({
       content: "アップロード中 ..."
     });
     loader.present();
 
     return Observable.fromPromise(
-      this.storage.ref( 'image/' + this.player.uid ).putString( this.image_uri, 'data_url' )
-      .then( ( snapshot ) => {
+      this.storage.ref( 'image/' + this.player.uid ).putString( image_uri, 'data_url' )
+      .then( ( snapshot: UploadTaskSnapshot ) => {
         loader.dismiss();
+        console.log( snapshot );
         console.log( 'アップロード完了' );
+        this.player.thumbnail_path = snapshot.metadata.fullPath;
+        console.log( this.player);
       }).catch( ( error ) => {
         loader.dismiss();
         console.log( error );
         console.log( 'アップロード失敗' );
       })
     );
-  }
+  };
 
 }

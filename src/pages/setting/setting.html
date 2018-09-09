@@ -23,8 +23,8 @@
       <ion-input [(ngModel)]="displayName"></ion-input>
     </ion-item>
     <ion-item>
-      <p>アイコン画像</p>
-      <div *ngIf="!!image_uri_for_preview" style="display: flex; justify-content: center; width: 100%">
+      <p float-left>アイコン画像</p>
+      <div *ngIf="!!image_uri_for_preview" style="display: flex; justify-content: center;">
         <img class="icon-image" [src]="image_uri_for_preview" (click)="imageSourceSelection()">
       </div>
       <button *ngIf="!image_uri_for_preview" ion-button color="secondary" (click)="imageSourceSelection()">アイコンを選択</button>

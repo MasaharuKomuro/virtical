@@ -7,7 +7,7 @@ export class Player {
   public email?: string;
   public tel?: string;
   public type: 'email'|'google'|'facebook';
-  public photoURL?: string;
+  public thumbnail_path?: string;
 
   constructor ( player?: Partial<Player> ) {
     Object.assign( this, player );
