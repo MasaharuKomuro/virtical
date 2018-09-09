@@ -9,6 +9,9 @@ export class Player {
   public type: 'email'|'google'|'facebook';
   public thumbnail_path?: string;
 
+  // 追加したパラメーター
+  public profile_image_download_url: string = '';
+
   constructor ( player?: Partial<Player> ) {
     Object.assign( this, player );
   }

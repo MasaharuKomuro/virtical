@@ -5,6 +5,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { Observable } from 'rxjs/Rx';
 import { AlertController } from 'ionic-angular';
+import { ImageHandle } from '../../providers/util/image-handle';
 
 /*
   Generated class for the UserProvider provider.
@@ -22,7 +23,8 @@ export class PlayerProvider {
   constructor(
     private auth: AngularFireAuth,
     private store: AngularFirestore,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private imageHandle: ImageHandle
   ) {
     console.log('Hello UserProvider Provider');
 
@@ -45,6 +47,5 @@ export class PlayerProvider {
       return Observable.of( true ) as any;
     });
       return Observable.of( true ) as any;
-  }
-
+  };
 }

@@ -69,7 +69,9 @@ export class SettingPage {
           console.log( player.thumbnail_path );
           this.displayName = !!player.displayName ? player.displayName : '';
           this.player = player;
-          this.setThumbnailUrl();
+          this.imageHandle.getProfilePictureUrl( player, player.uid ).subscribe( ( url ) => {
+            this.image_uri_for_preview = url;
+          });
           loading.dismiss();
         } );
       }
@@ -79,15 +81,6 @@ export class SettingPage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad SettingPage');
   }
-
-  private setThumbnailUrl = () => {
-    if ( !!this.player.thumbnail_path ) {
-      this.imageHandle.getPictureUrl( 'image/' + this.player.uid ).subscribe( ( url ) => {
-        console.log( url );
-        this.image_uri_for_preview = url;
-      });
-    }
-  };
 
   // プロフィールを更新する
   public updateUserProfile = () => {
