@@ -51,10 +51,13 @@
     </ion-card-content>
     <ion-row>
       <ion-col style="color: #666; font-size: 1.2rem;">
+        <span float-left margin-right>
+          <img class="thumbnail" [src]="comment?.player?.profile_image_download_url">
+        </span>
         <span>
           {{ comment?.player?.displayName }}
         </span><br>
-        <span>{{ comment.created_at | unixDate: 'YYYY年MM月DD日 H時mm分' }}</span>
+        <span>{{ comment.created_at | unixDate: 'YYYY/MM/DD H:mm' }}</span>
       </ion-col>
       <ion-col>
         <ion-row style="justify-content: flex-end;">

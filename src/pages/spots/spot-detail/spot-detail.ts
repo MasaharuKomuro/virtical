@@ -16,6 +16,7 @@ import { Player } from '../../../model/Player';
 import { PlayerProvider } from '../../../providers/player/player';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { User } from 'firebase';
+import { ImageHandle } from '../../../providers/util/image-handle';
 
 /**
  * Genemy_rated class for the SpotDetailPage page.
@@ -53,7 +54,8 @@ export class SpotDetailPage {
     public modalCtrl: ModalController,
     private actionSheetCtrl: ActionSheetController,
     public playerProvider: PlayerProvider,
-    private auth: AngularFireAuth
+    private auth: AngularFireAuth,
+    private imageHandle: ImageHandle
     ) {
   }
 
@@ -63,7 +65,7 @@ export class SpotDetailPage {
     this.getSpotFromName();
   }
 
-  // スポットを名前からスポットの全情報を検索する
+  // スポット名からスポットの全情報を検索する
   private getSpotFromName = () => {
     const name: string = this.navParams.get( 'name' );
     const loader = this.loadingCtrl.create({ content: '読込中 ...' });
@@ -144,18 +146,16 @@ export class SpotDetailPage {
       });
 
       // ユーザ情報を取得する
-      if ( !!this.loadingCtrl ) {
-        // 全てのユーザ情報を取得して、コメントに join する
-        this.store.collection( 'players' ).valueChanges().subscribe( ( players: Player[] ) => {
-          this.comments.forEach( ( comment: Comment) => {
-            comment.player = players.find( ( player: Player ) => {
-              return player.uid === comment.uid;
-            });
+      // 全てのユーザ情報を取得して、コメントに join する
+      this.store.collection( 'players' ).valueChanges().subscribe( ( players: Player[] ) => {
+        this.comments.forEach( ( comment: Comment) => {
+          comment.player = players.find( ( player: Player ) => {
+            return player.uid === comment.uid;
           });
+          this.imageHandle.getProfilePictureUrl( comment.player ).subscribe();
         });
-        console.log( this.comments );
-        loader.dismiss().catch(() => {});
-      }
+      });
+      loader.dismiss().catch(() => {});
     });
   };
 

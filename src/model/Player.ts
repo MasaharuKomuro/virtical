@@ -1,3 +1,5 @@
+import { SafeUrl } from '@angular/platform-browser/src/security/dom_sanitization_service';
+
 export class Player {
   public name: string;
   public uid: string;
@@ -10,7 +12,7 @@ export class Player {
   public thumbnail_path?: string;
 
   // 追加したパラメーター
-  public profile_image_download_url: string = '';
+  public profile_image_download_url: SafeUrl = '';
 
   constructor ( player?: Partial<Player> ) {
     Object.assign( this, player );

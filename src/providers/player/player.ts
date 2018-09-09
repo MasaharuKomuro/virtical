@@ -3,9 +3,8 @@ import { Player } from '../../model/Player';
 import { User } from 'firebase';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
-import { Observable } from 'rxjs/Rx';
+import { BehaviorSubject, Observable } from 'rxjs/Rx';
 import { AlertController } from 'ionic-angular';
-import { ImageHandle } from '../../providers/util/image-handle';
 
 /*
   Generated class for the UserProvider provider.
@@ -18,19 +17,21 @@ export class PlayerProvider {
 
   public user: User;
 
-  public player: Observable<Player>;
+  public playerSubject = new BehaviorSubject<Player>( null );
+  public player: Observable<Player> = this.playerSubject.asObservable().filter( _ => _ !== null );
 
   constructor(
     private auth: AngularFireAuth,
     private store: AngularFirestore,
-    private alertCtrl: AlertController,
-    private imageHandle: ImageHandle
+    private alertCtrl: AlertController
   ) {
     console.log('Hello UserProvider Provider');
 
     this.auth.user.subscribe( ( user: User ) => {
       this.user = user;
-      this.player = this.store.doc( 'players/' + this.user.uid ).valueChanges() as Observable<Player>;
+      this.store.doc( 'players/' + this.user.uid ).valueChanges().subscribe( (player: Player ) => {
+        this.playerSubject.next( player );
+      });
     })
   }
 

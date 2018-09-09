@@ -57,30 +57,30 @@ export class SettingPage {
     private storage: AngularFireStorage,
     private imageHandle: ImageHandle
   ) {
-    this.is_cordova_env = this.platform.is('cordova' );
-    const loading = this.loadingCtrl.create( { content: '読込中 ...'} );
-    loading.present();
-    // player 情報がセットされるのを待つ
-    const wait_for_player = setInterval( () => {
-      if ( !!this.playerProvider.player ) {
-        clearInterval( wait_for_player );
-        this.playerProvider.player.subscribe( ( player: Player ) => {
-          console.log( player );
-          console.log( player.thumbnail_path );
-          this.displayName = !!player.displayName ? player.displayName : '';
-          this.player = player;
-          this.imageHandle.getProfilePictureUrl( player, player.uid ).subscribe( ( url ) => {
-            this.image_uri_for_preview = url;
-          });
-          loading.dismiss();
-        } );
-      }
-    }, 100);
   }
 
   ionViewDidLoad() {
+    this.init();
     console.log('ionViewDidLoad SettingPage');
   }
+
+  public init = () => {
+    this.is_cordova_env = this.platform.is('cordova' );
+    const loading = this.loadingCtrl.create( { content: '読込中 ...'} );
+    loading.present();
+
+    // プレイヤー情報をセットする
+    this.playerProvider.player.subscribe( ( player: Player ) => {
+      console.log( player );
+      console.log( player.thumbnail_path );
+      this.displayName = !!player.displayName ? player.displayName : '';
+      this.player = player;
+      this.imageHandle.getProfilePictureUrl( player ).subscribe( ( url ) => {
+        this.image_uri_for_preview = url;
+      });
+      loading.dismiss();
+    } );
+  };
 
   // プロフィールを更新する
   public updateUserProfile = () => {
